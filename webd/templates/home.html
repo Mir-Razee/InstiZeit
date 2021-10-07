@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}
+Home
+{% endblock %}
+
+{% block nav %}
+
+<ul class="navbar-nav">
+  <li class="nav-item">
+    <form action="/logout">
+        <button type="submit">Logout</button>
+    </form>
+  </li>
+</ul>
+
+{% endblock %}
+
+
+{% block content %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/home.css') }}">
+
+<body>
+
+<div class="w3-content" style="max-width:2000px;margin-top:46px">
+
+
+  <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
+    <h2 class="w3-wide">Home page</h2>
+
+
+    </div>
+  </div>
+
+{% endblock %}
