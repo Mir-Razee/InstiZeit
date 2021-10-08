@@ -1,11 +1,14 @@
 from webd import app
 from flask import redirect, url_for, session, render_template
-from webd.decorator import login_required
 from webd import oauth
 
 @app.route("/")
 def landing():
-    return render_template('landing.html')
+    user = dict(session).get('profile', None)
+    if user:
+        return render_template('home.html',user=user)
+    else:
+        return render_template('landing.html')
 
 @app.route('/login')
 def login():
@@ -24,13 +27,7 @@ def authorize():
     # and set ur own data in the session not the profile from google
     session['profile'] = user_info
     session.permanent = True  # make the session permanant so it keeps existing after browser gets closed
-    return redirect('/home')
-
-@app.route("/home")
-@login_required
-def home():
-    return render_template('home.html')
-
+    return redirect('/')
 
 @app.route('/logout')
 def logout():

@@ -2,7 +2,6 @@ from flask import Flask
 from authlib.integrations.flask_client import OAuth
 import os
 from datetime import timedelta
-from webd import decorator
 
 app = Flask(__name__)
 
