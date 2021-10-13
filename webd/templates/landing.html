@@ -1,10 +1,5 @@
-{% extends 'base.html' %}
-{% block title %}
-Landing page
-{% endblock %}
 
-{% block nav %}
-
+<html>
 <ul class="navbar-nav">
   <li class="nav-item">
     <form action="/login">
@@ -13,9 +8,7 @@ Landing page
   </li>
 </ul>
 
-{% endblock %}
 
-{% block content %}
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/landing.css') }}">
@@ -31,5 +24,5 @@ Landing page
 
     </div>
   </div>
-
-{% endblock %}
+</body>
+</html>

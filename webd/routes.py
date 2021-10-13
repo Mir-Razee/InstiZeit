@@ -6,9 +6,10 @@ from webd import oauth
 def landing():
     user = dict(session).get('profile', None)
     if user:
-        return render_template('home.html',user=user)
+        return render_template('home2.html',user=user)
     else:
         return render_template('landing.html')
+
 
 @app.route('/login')
 def login():
@@ -34,3 +35,11 @@ def logout():
     for key in list(session.keys()):
         session.pop(key)
     return redirect('/')
+
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
+
+@app.route("/home")
+def home():
+    return render_template('home2.html')

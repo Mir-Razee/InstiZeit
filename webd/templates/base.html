@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <title>
+        {% block title %}
+
+        {% endblock %}
+    </title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,55 +14,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    
-    <title>
-        {% block title %}
-
-        {% endblock %}
-    </title>
 </head>
-<body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <a class="navbar-brand" >IIT Indore</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            {% block nav %}
+<style>
+html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+</style>
+<body class="w3-theme-l5">
 
-            {% endblock %}
-            <!-- After Database managed, replace with appropriate condition -->
-            <!-- <ul class="navbar-nav mr-auto">   -->
-            <!-- {% if user %}
-              <li class="nav-item active">
-                  <a class="nav-link w3-bar-item w3-button w3-padding-large" href="{{ url_for('landing') }}">Home<span class="sr-only">(current)</span></a>
-              </li>
-              {% else %}
-              <li class="nav-item active">
-                  <a class="nav-link w3-bar-item w3-button w3-padding-large" href="{{ url_for('landing') }}">InstiTime<span class="sr-only">(current)</span></a>
-              </li>
-              {% endif %}
-          </ul>
-  
-            {% if user %}
-              <ul class="navbar-nav">
-                  <li class="nav-item">
-                    <form action="/logout">
-                        <button type="submit">Logout</button>
-                    </form>
-                  </li>
-              </ul>
-            {% else %}
-              <ul class="navbar-nav">
-                  <li class="nav-item">
-                      <form action="/login">
-                          <button type="submit">Sign In using Google</button>
-                      </form>
-                  </li>
-              </ul>
-            {% endif %} -->
-        </div>
-    </nav>
+<nav>
+<div class="w3-top">
+    <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
+    {% block nav %}
+
+    {% endblock %}
+  <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+  <a href="{{url_for('home')}}" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
+  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="News"><i class="fa fa-globe"></i></a>
+  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings"><i class="fa fa-user"></i></a>
+  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-envelope"></i></a>
+  <div class="w3-dropdown-hover w3-hide-small">
+    <button class="w3-button w3-padding-large" title="Notifications"><i class="fa fa-bell"></i><span class="w3-badge w3-right w3-small w3-green">3</span></button>
+    <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+      <a href="#" class="w3-bar-item w3-button">One new friend request</a>
+      <a href="#" class="w3-bar-item w3-button">John Doe posted on your wall</a>
+      <a href="#" class="w3-bar-item w3-button">Jane likes your post</a>
+    </div>
+  </div>
+  <a href="{{url_for('logout')}}" class="w3-bar-item w3-button w3-right w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-logout">LogOut</i></a>
+  <a href="{{url_for('profile')}}" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Profile">
+    <img src="static/pics/avatar2.png" class="w3-circle" style="height:23px;width:23px" alt="Avatar">
+  </a>
+ </div>
+</div>
+</nav>
     {% block content %}
 
     {% endblock %}
