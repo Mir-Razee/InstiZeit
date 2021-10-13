@@ -1,0 +1,37 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+
+body{
+	background: url('s13.png');
+	background-attachment:fixed;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+h1{
+    margin:15% 50% auto 22%;
+    font-size: 65px;
+    color: #1338BE;
+}
+
+.main{
+    margin: 50px 10% auto 25%;
+}
+.submit-btn{
+	display:  block;
+	margin-top: 20px;
+	border: none;
+	outline: none;
+	background: #FF652F;
+	font-size: 16px;
+	letter-spacing: 1px;
+	padding: 10px 20px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.submit-btn:hover{
+	background-color: #00FF00;
+}
