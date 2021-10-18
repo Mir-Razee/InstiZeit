@@ -2,11 +2,13 @@ from flask import Flask
 from authlib.integrations.flask_client import OAuth
 import os
 from datetime import timedelta
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 app = Flask(__name__)
 
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 # Session config
 app.secret_key = 'super-secret-key'
@@ -27,6 +29,18 @@ google = oauth.register(
     userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',  # This is only needed if using openId to fetch user info
     client_kwargs={'scope': 'openid email profile'},
 )
+
+DATABASE_PASSWORD=os.getenv("DATABASE_PASSWORD")
+engine = create_engine(DATABASE_PASSWORD)
+
+try:
+    conn = engine.connect()
+except Exception as e:
+    print('Connection Failed\nError Details:', e)
+    sys.exit(1)
+conn.close()
+
+db = scoped_session(sessionmaker(bind=engine))
 
 from webd import routes
 
