@@ -1,6 +1,19 @@
-from webd import app, db
-from flask import redirect, url_for, session, render_template
-from webd import oauth
+from webd import app, db, datetime
+from flask import redirect, url_for, session, render_template, request, flash
+from werkzeug.utils import secure_filename
+from webd import oauth, client
+import os
+
+def upload(client, img_path):
+
+    config = {
+        'album': '2c0C92u',
+    }
+
+    print("Uploading image... ")
+    image = client.upload_from_path(img_path, anon=False)
+    print("Done")
+    return image['link']
 
 @app.route("/")
 def landing():
@@ -17,7 +30,7 @@ def landing():
                 post_info.append(info)
             print(ALL_POSTS)
             print(post_info)
-            return render_template('home2.html',user=user, ap = ALL_POSTS, pi = post_info)
+            return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info)
         else:
             return render_template('register.html', user=user)
 
@@ -77,10 +90,36 @@ def logout():
 def profile():
     return render_template('profile.html')
 
-@app.route('/posts')
-def posts():
+@app.route('/posts', methods=['POST', 'GET'])
+def posts(session=session):
     if request.method == "POST":
+        flash("Uploading Images please wait", "success")
+        now = datetime.now()
+        dt = now.strftime("%H:%M, %B %d")
         text = request.form.get('text')
-        imurl = request.form.get('imurl')
+        i1 = request.files['u1']
+        i2 = request.files['u2']
+        print(i1, i2, type(i1), type(i2))
+        url1 = None; url2 = None;
+        if i1.filename != '':
+            filename = secure_filename(i1.filename)
+            u1 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            i1.save(u1)
+            url1 = upload(client, u1)
+            print(filename, u1, url1)
+        if i2.filename != '':
+            filename = secure_filename(i2.filename)
+            u2 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            i2.save(u2)
+            url2 = upload(client, u2)
+            print(filename, u2, url2)
 
+        user = dict(session).get('profile', None)
+        email = user.get("email")
+
+        db.execute("INSERT INTO Posts(By_User, Data, Datetime, url1, url2) VALUES(:By_User, :Data, :Datetime, :url1, :url2)",
+                   {"By_User":email, "Data":text, "Datetime":dt, "url1":url1, "url2":url2})
+        db.commit()
+
+        return render_template('home2.html')
     return render_template('posts.html')

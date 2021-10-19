@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Title</title>
+</head>
+<body>
+<form action="/posts" method="POST" enctype="multipart/form-data">
+<textarea id="text" class="text" cols="50" rows ="20" name="text" maxlength="255"></textarea>
+<div>
+<p><input type="file"  accept="image/*" name="u1" id="u1"  onchange="loadFile1(event)" style="display: none;"></p>
+<p><label for="u1" style="cursor: pointer;"><i class="fa fa-upload" style="font-size:36px"></i></label></p>
+<p><img id="output1" width="200" /></p>
+</div>
+<div>
+<p><input type="file"  accept="image/*" name="u2" id="u2"  onchange="loadFile2(event)" style="display: none;"></p>
+<p><label for="u2" style="cursor: pointer;"><i class="fa fa-upload" style="font-size:36px"></i></label></p>
+<p><img id="output2" width="200" /></p>
+</div>
+    <input type="submit" value="Post" class="submitButton"></form>
+<script>
+
+var loadFile1 = function(event) {
+	var image = document.getElementById('output1');
+	image.src = URL.createObjectURL(event.target.files[0]);
+};
+var loadFile2 = function(event) {
+	var image = document.getElementById('output2');
+	image.src = URL.createObjectURL(event.target.files[0]);
+};
+</script>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert {{ category }}"> {{ message }} </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+</body>
+</html>
+
+<!--const KEY = ;-->
+<!--$('#u1').change(function() {-->
+<!--   var reader = new FileReader();-->
+<!--   reader.onload = function(e) {-->
+<!--   //this next line separates url from data-->
+<!--   var iurl = e.target.result.substr(e.target.result.indexOf(",") + 1, e.target.result.length);-->
+<!--   var clientId = KEY;-->
+<!--   $.ajax({-->
+<!--    url: "https://api.imgur.com/3/upload",-->
+<!--    type: "POST",-->
+<!--    datatype: "json",-->
+<!--    data: {-->
+<!--    'image': iurl,-->
+<!--    'type': 'base64'-->
+<!--    },-->
+<!--    success: fdone,//calling function which displays url-->
+<!--    error: function(){alert("failed")},-->
+<!--    beforeSend: function (xhr) {-->
+<!--        xhr.setRequestHeader("Authorization", "Client-ID " + clientId);-->
+<!--    }-->
+<!--});-->
+<!--};-->
+<!-- reader.readAsDataURL(this.files[0]);-->
+<!--});-->
+
+<!--function fdone(data) //this function is called on success from ajax-->
+<!--{-->
+<!--   alert(data.data.link);-->
+<!--}-->

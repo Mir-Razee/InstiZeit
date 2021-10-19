@@ -4,16 +4,20 @@ import os
 from datetime import timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from imgurpython import ImgurClient
+from datetime import datetime
 
 app = Flask(__name__)
 
 from dotenv import load_dotenv
 load_dotenv()
 
+UPLOAD_FOLDER = 'D:\\imgur'
 # Session config
 app.secret_key = 'super-secret-key'
 app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # oAuth Setup
 oauth = OAuth(app)
@@ -41,6 +45,13 @@ except Exception as e:
 conn.close()
 
 db = scoped_session(sessionmaker(bind=engine))
+
+client_id = '95794ccc4e8dd31'
+client_secret = '62b526f23e2c6c55c9c816c0cbd99be61753598a'
+
+client = ImgurClient(client_id, client_secret)
+
+print(client)
 
 from webd import routes
 

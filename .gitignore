@@ -2,4 +2,5 @@
 *.pyc
 __pycache__
 #ignore virtual env
+.env
 venv
