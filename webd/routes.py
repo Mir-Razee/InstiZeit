@@ -36,7 +36,7 @@ def home(session=session):
             print(post_info)
             return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info)
         else:
-            return render_template('register.html', user=user)
+            return redirect(url_for('register'))
 
     return render_template('landing.html')
 
@@ -58,7 +58,7 @@ def authorize():
     # and set ur own data in the session not the profile from google
     session['profile'] = user_info
     session.permanent = True  # make the session permanant so it keeps existing after browser gets closed
-    return redirect(url_for('home'))
+    return redirect(url_for('register')) ##
 
 @app.route('/logout')
 def logout():
@@ -66,9 +66,37 @@ def logout():
         session.pop(key)
     return redirect('/')
 
+@app.route('/register', methods=["GET","POST"])
+def register(session=session):
+    user = dict(session).get('profile', None)
+    email = user.get("email")
+    name = user.get("name")
+    pic = user.get("picture")
+    if request.method == "POST":
+
+        year=request.form.get("year")
+        dept=request.form.get("dept")
+        category=request.form.get("category")
+
+        db.execute("INSERT INTO Profile(email,name,adm_year,branch,category,imgurl) VALUES(:email, :name, :adm_year,:branch,:category,:imgurl)",
+                   {"email": email, "name": name, "adm_year":year, "branch":dept, "category":category,"imgurl":pic})
+        db.commit()
+        flash('User Registered Successfully!')
+        return(redirect(url_for('home')))
+
+    return render_template("register_profile.html",email=email,name=name,pic=pic)
+
 @app.route('/profile')
-def profile():
-    return render_template('profile.html')
+def profile(session=session):
+    user = dict(session).get('profile', None)
+    pict=user.get("picture")
+    email = user.get("email")
+    table_data = db.execute("SELECT * FROM Profile WHERE email =:email", {"email": email}).fetchone()
+    print(table_data)
+    if table_data==None:
+        return redirect(url_for("register"))
+
+    return render_template('profile.html', pict=pict,table=table_data)
 
 @app.route('/posts', methods=['POST', 'GET'])
 def posts(session=session):

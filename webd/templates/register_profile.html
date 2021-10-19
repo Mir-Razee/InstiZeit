@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}
+Home page
+{% endblock %}
+
+{% block nav %}
+
+{% endblock %}
+
+{% block content %}
+<body>
+<!-- Page Container -->
+<form action="{{url_for('register')}}" method ="POST">
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+  <!-- The Grid -->
+      <!-- Profile -->
+      <div class="w3-card w3-round w3-white">
+        <div class="w3-container">
+             <h4 class="w3-center">Register My Profile</h4>
+             <p class="w3-center"><img src="{{pic}}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+
+             <hr>
+                <p><i class="fa fa-at fa-fw w3-margin-right w3-text-theme"></i><strong>Email</strong>:{{email}}</p>
+
+                <p><i class="fas fa-user-graduate fa-fw w3-margin-right w3-text-theme"></i><strong>Username</strong>:{{name}}<p>
+             <label for ="year"><i class="fas fa-calendar fa-fw w3-margin-right w3-text-theme"></i> <strong>Admission Year</strong>:</label>
+                <input type="number"  name="year" id="year" min="2010" max="2021" required><br>
+             <label for="dept"><i class="fa fa-book fa-fw w3-margin-right w3-text-theme"></i><strong>Branch</strong> </label>
+            <select class="form-select" name="dept" id="dept" required>
+              <option selected>Select a Department</option>
+              <option value="CSE">CSE</option>
+              <option value="ME">ME</option>
+              <option value="EE">EE</option>
+              <option value="CE">CE</option>
+              <option value="MEMS">MEMS</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="HSC">HSC</option>
+              <option value="BSBE">BSBE</option>
+              <option value="Physics">Physics</option>
+              <option value="Astronomy">Astronomy</option>
+            </select> <br>
+            <label for="category"><i class="fas fa-book-reader fa-fw w3-margin-right w3-text-theme "></i><strong>Category</strong></label>
+           <select class="form-select" name="category" id="category" required>
+          <option selected>Select Category</option>
+          <option value="Student">Student</option>
+          <option value="Faculty">Faculty</option>
+           </select><br>
+           <input type="Submit" value="Register">
+          </div>
+      <br>
+      </div>
+</div>
+</form>
+
+
+</div>
+{% endblock %}

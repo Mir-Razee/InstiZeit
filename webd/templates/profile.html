@@ -16,11 +16,13 @@ Home page
       <div class="w3-card w3-round w3-white">
         <div class="w3-container">
          <h4 class="w3-center">My Profile</h4>
-         <p class="w3-center"><img src="static/pics/avatar3.png" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+         <p class="w3-center"><img src="{{ pict }}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
          <hr>
-         <p><i class="fas fa-user-graduate fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
-         <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> London, UK</p>
-         <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> April 1, 1988</p>
+            <p><i class="fa fa-at fa-fw w3-margin-right w3-text-theme"></i><strong>Email</strong>:{{table[0] }}</p>
+            <p><i class="fas fa-user-graduate fa-fw w3-margin-right w3-text-theme"></i><strong>Username</strong>:{{table[1] }}</p>
+         <p><i class="fa fa-calendar fa-fw w3-margin-right w3-text-theme"></i> <strong>Admission Year</strong>:{{table[2] }} </p>
+         <p><i class="fa fa-book fa-fw w3-margin-right w3-text-theme"></i><strong>Branch</strong>:{{table[3] }} </p>
+            <p><i class="fas fa-book-reader fa-fw w3-margin-right w3-text-theme "></i><strong>Category</strong>:{{table[4] }} </p>
         </div>
       </div>
       <br>
