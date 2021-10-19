@@ -46,10 +46,7 @@ conn.close()
 
 db = scoped_session(sessionmaker(bind=engine))
 
-client_id = '95794ccc4e8dd31'
-client_secret = '62b526f23e2c6c55c9c816c0cbd99be61753598a'
-
-client = ImgurClient(client_id, client_secret)
+client = ImgurClient(os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET"))
 
 print(client)
 

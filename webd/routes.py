@@ -17,6 +17,10 @@ def upload(client, img_path):
 
 @app.route("/")
 def landing():
+    return render_template('landing.html')
+
+@app.route("/home")
+def home(session=session):
     user = dict(session).get('profile', None)
     if user:
         email = user.get("email")
@@ -24,39 +28,15 @@ def landing():
         print(CHECK_USER)
         if CHECK_USER:
             ALL_POSTS = db.execute("SELECT * FROM Posts").fetchall()
-            post_info=[]
+            post_info = []
             for i in ALL_POSTS:
-                info = db.execute("SELECT name, imgurl FROM profile where email=:i", {"i":i[1]}).fetchone()
+                info = db.execute("SELECT name, imgurl FROM profile where email=:i", {"i": i[1]}).fetchone()
                 post_info.append(info)
             print(ALL_POSTS)
             print(post_info)
             return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info)
         else:
             return render_template('register.html', user=user)
-
-    return render_template('landing.html')
-
-@app.route("/home")
-def home(session=session):
-
-    # user = dict(session).get('profile', None)
-    # if user:
-    #     email = user.get("email")
-    #     CHECK_USER = db.execute("SELECT * FROM profile where email=:email", {"email": email}).fetchone()
-    #     print(CHECK_USER)
-    #     if CHECK_USER:
-    #         # url = user.get("hasImage")
-    #         #print(url)
-    #         ALL_POSTS = db.execute("SELECT * FROM Posts").fetchall()
-    #         names=[]
-    #         for i in ALL_POSTS:
-    #             name = db.execute("SELECT name FROM profile where email=:i", {"i":i[1]}).fetchone()
-    #             names.append(name[0])
-    #         print(ALL_POSTS)
-    #         print(names)
-    #         return render_template('home2.html',user=user, ap = ALL_POSTS, names=names)
-    #     else:
-    #         return render_template('register.html', user=user)
 
     return render_template('landing.html')
 
@@ -78,7 +58,7 @@ def authorize():
     # and set ur own data in the session not the profile from google
     session['profile'] = user_info
     session.permanent = True  # make the session permanant so it keeps existing after browser gets closed
-    return redirect('/')
+    return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():
@@ -121,5 +101,5 @@ def posts(session=session):
                    {"By_User":email, "Data":text, "Datetime":dt, "url1":url1, "url2":url2})
         db.commit()
 
-        return render_template('home2.html')
+        return redirect(url_for('home'))
     return render_template('posts.html')
