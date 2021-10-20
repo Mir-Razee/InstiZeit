@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}
+Home page
+{% endblock %}
+
+{% block nav %}
+
+{% endblock %}
+
+{% block content %}
+<body>
+<!-- Page Container -->
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+  <!-- The Grid -->
+      <!-- Profile -->
+      <div class="w3-card w3-round w3-white">
+        <div class="w3-container">
+         <h4 class="w3-center">Info</h4>
+         <p class="w3-center"><img src="{{data[5]}}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+         <hr>
+            <p><i class="fa fa-at fa-fw w3-margin-right w3-text-theme"></i><strong>Email</strong>:{{data[0] }}</p>
+            <p><i class="fas fa-user-graduate fa-fw w3-margin-right w3-text-theme"></i><strong>Username</strong>:{{data[1] }}</p>
+         <p><i class="fa fa-calendar fa-fw w3-margin-right w3-text-theme"></i> <strong>Admission Year</strong>:{{data[2] }} </p>
+         <p><i class="fa fa-book fa-fw w3-margin-right w3-text-theme"></i><strong>Branch</strong>:{{data[3] }} </p>
+            <p><i class="fas fa-book-reader fa-fw w3-margin-right w3-text-theme "></i><strong>Category</strong>:{{data[4] }} </p>
+        </div>
+      </div>
+      <br>
+
+
+
+
+</div>
+{% endblock %}

@@ -48,7 +48,6 @@ db = scoped_session(sessionmaker(bind=engine))
 
 client = ImgurClient(os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET"))
 
-print(client)
 
 from webd import routes
 

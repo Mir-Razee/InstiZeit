@@ -1,11 +1,11 @@
 # from imgurpython import ImgurClient
+# import os
 #
-#
-# client = ImgurClient(client_id, client_secret)
+# client = ImgurClient()
 #
 # print(client)
 #
-# path = 'D:\pic4.jpg'
+# path = 'D:\\forest.jpg'
 #
 #
 # def upload(client, img_path):
@@ -31,10 +31,10 @@
 # #
 # # z = db.execute("SELECT * FROM profile where").fetchall()
 # # print(z)
-
-import os
-from werkzeug.utils import secure_filename
-
-print(os.path)
-s = "image.jpeg"
-filename = secure_filename(s.filename)
+#
+# import os
+# from werkzeug.utils import secure_filename
+#
+# print(os.path)
+# s = "image.jpeg"
+# filename = secure_filename(s.filename)

@@ -2,23 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
     <title>Title</title>
 </head>
 <body>
-<form action="/posts" method="POST" enctype="multipart/form-data">
-<textarea id="text" class="text" cols="50" rows ="20" name="text" maxlength="255"></textarea>
-<div>
-<p><input type="file"  accept="image/*" name="u1" id="u1"  onchange="loadFile1(event)" style="display: none;"></p>
-<p><label for="u1" style="cursor: pointer;"><i class="fa fa-upload" style="font-size:36px"></i></label></p>
-<p><img id="output1" width="200" /></p>
-</div>
-<div>
-<p><input type="file"  accept="image/*" name="u2" id="u2"  onchange="loadFile2(event)" style="display: none;"></p>
-<p><label for="u2" style="cursor: pointer;"><i class="fa fa-upload" style="font-size:36px"></i></label></p>
-<p><img id="output2" width="200" /></p>
-</div>
-    <input type="submit" value="Post" class="submitButton"></form>
+    <h2 align="center"> <i class="fas fa-pencil-alt"></i> Create New Post</h2>
+    <div class="w3-container w3-card w3-white w3-round w3-margin" style="margin: 20px 100px auto 100px"><br>
+    <div class="w3-row-padding" style="margin:0 -16px">
+        <form action="/posts" method="POST" enctype="multipart/form-data">
+            <div align="center"><p><textarea id="text" class="text" cols="30" rows ="10" name="text" maxlength="255"></textarea></p></div>
+            <div class="w3-half" align="center">
+                <p><input type="file"  accept="image/*" name="u1" id="u1"  onchange="loadFile1(event)" style="display: none;"></p>
+                <p><label for="u1" style="cursor: pointer;"><i class="fa fa-upload" style="font-size:36px"></i></label></p>
+                <p><img id="output1" width="200" /></p>
+            </div>
+            <div class="w3-half" align="center">
+                <p><input type="file"  accept="image/*" name="u2" id="u2"  onchange="loadFile2(event)" style="display: none;"></p>
+                <p><label for="u2" style="cursor: pointer;"><i class="fa fa-upload" style="font-size:36px"></i></label></p>
+                <p><img id="output2" width="200" /></p>
+            </div>
+
+            <div align="center"><input type="submit" value="Post" class="submitButton"></div>
+        </form>
+    </div>
+    </div>
 <script>
 
 var loadFile1 = function(event) {
