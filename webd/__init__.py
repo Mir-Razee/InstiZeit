@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from imgurpython import ImgurClient
 from datetime import datetime
-
+import sys
 app = Flask(__name__)
 
 from dotenv import load_dotenv
@@ -48,6 +48,7 @@ db = scoped_session(sessionmaker(bind=engine))
 
 client = ImgurClient(os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET"))
 
+from webd import msg
 
 from webd import routes
 

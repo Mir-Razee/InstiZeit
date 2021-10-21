@@ -3,6 +3,7 @@ from flask import redirect, url_for, session, render_template, request, flash
 from werkzeug.utils import secure_filename
 from webd import oauth, client
 import os
+from webd.decorator import login_required
 
 def upload(client, img_path):
 
@@ -16,10 +17,6 @@ def upload(client, img_path):
     return image['link']
 
 @app.route("/")
-def landing():
-    return render_template('landing.html')
-
-@app.route("/home")
 def home(session=session):
     user = dict(session).get('profile', None)
     if user:
@@ -63,6 +60,7 @@ def logout():
     return redirect('/')
 
 @app.route('/register', methods=["GET","POST"])
+@login_required
 def register(session=session):
     user = dict(session).get('profile', None)
     email = user.get("email")
@@ -83,6 +81,7 @@ def register(session=session):
     return render_template("register_profile.html",email=email,name=name,pic=pic)
 
 @app.route('/profile')
+@login_required
 def profile(session=session):
     user = dict(session).get('profile', None)
     pict=user.get("picture")
@@ -95,6 +94,7 @@ def profile(session=session):
     return render_template('profile.html', pict=pict,table=table_data)
 
 @app.route('/posts', methods=['POST', 'GET'])
+@login_required
 def posts(session=session):
     if request.method == "POST":
         now = datetime.now()
@@ -128,9 +128,16 @@ def posts(session=session):
     return render_template('posts.html')
 
 @app.route('/@/<email>')
+@login_required
 def getprofile(email):
     print(email, type(email))
     CHECK_USER = db.execute("SELECT * FROM Profile where email=:email", {"email":email}).fetchone();
     if CHECK_USER:
         return render_template("getprofile.html", data=CHECK_USER)
     return "No User Found"
+
+
+@app.route('/msg')
+@login_required
+def msg():
+    return render_template("msg.html")

@@ -3,4 +3,5 @@
 __pycache__
 #ignore virtual env
 .env
+.idea
 venv
