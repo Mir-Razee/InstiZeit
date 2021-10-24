@@ -21,14 +21,28 @@ def home(session=session):
     user = dict(session).get('profile', None)
     if user:
         email = user.get("email")
-        CHECK_USER = db.execute("SELECT * FROM profile where email=:email", {"email": email}).fetchone()
+        CHECK_USER = db.execute("SELECT * FROM Profile where email=:email", {"email": email}).fetchone()
         if CHECK_USER:
+            emailto = user.get("email")
+            requests = db.execute("SELECT emailfrom FROM friendreq WHERE emailto =:emailto",
+                                  {"emailto": emailto}).fetchall()
+            for i in range(len(requests)):
+                requests[i] = requests[i][0]
+            nameinfo = db.execute("SELECT name FROM Profile WHERE email = ANY(SELECT emailfrom FROM friendreq WHERE emailto =:emailto);",
+                {"emailto": emailto}).fetchall()
+            imginfo = db.execute(
+                "SELECT imgurl FROM Profile WHERE email = ANY(SELECT emailfrom FROM friendreq WHERE emailto =:emailto);",
+                {"emailto": emailto}).fetchall()
+            for i in range(len(nameinfo)):
+                nameinfo[i] = nameinfo[i][0]
+            for i in range(len(nameinfo)):
+                imginfo[i] = imginfo[i][0]
             ALL_POSTS = db.execute("SELECT * FROM Posts").fetchall()
             post_info = []
             for i in ALL_POSTS:
-                info = db.execute("SELECT name, imgurl FROM profile where email=:i", {"i": i[1]}).fetchone()
+                info = db.execute("SELECT name, imgurl FROM Profile where email=:i", {"i": i[1]}).fetchone()
                 post_info.append(info)
-            return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info)
+            return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info,nameinfo=nameinfo,size=len(nameinfo),imginfo=imginfo)
         else:
             return redirect(url_for('register'))
 
@@ -141,3 +155,43 @@ def getprofile(email):
 @login_required
 def msg():
     return render_template("msg.html")
+
+@app.route('/addfr')
+def addfr(session=session):
+    user = dict(session).get('profile',None)
+    email = user.get('email')
+    result = db.execute("SELECT name FROM Profile WHERE NOT email = ANY(SELECT email1 FROM friends) AND NOT email=:email",{"email":email}).fetchall()
+    for i in range(len(result)):
+        result[i] = result[i][0]
+    return render_template('AF.html',result=result,size=len(result))
+
+@app.route('/sendreq', methods=["POST","GET"])
+def sendreq(session=session):
+    user = dict(session).get('profile',None)
+    emailfrom = user.get("email")
+    to_name = request.form.get("myName")
+    emailto = db.execute("SELECT email FROM Profile WHERE name=:name", {"name": to_name}).fetchone()[0]
+    db.execute("INSERT INTO friendreq(emailfrom, emailto, state) VALUES(:emailfrom, :emailto, 'Pending')",{"emailfrom":emailfrom,"emailto":emailto})
+    db.commit()
+    return redirect(url_for('home'))
+
+@app.route('/acceptreq', methods=['POST','GET'])
+def accreq(session=session):
+    user = dict(session).get('profile', None)
+    emailto = user.get("email")
+    requests = db.execute("SELECT emailfrom FROM friendreq WHERE emailto =:emailto", {"emailto": emailto}).fetchall()
+    for i in range(len(requests)):
+        requests[i] = requests[i][0]
+
+    emailfrom = requests[0]
+    response = request.form.get('Res')
+    print(response,type(response))
+    if response=="1":
+        db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email1":emailto, "email2":requests[0]})
+        db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email2":emailto, "email1":requests[0]})
+        db.commit()
+
+    db.execute("DELETE FROM friendreq WHERE emailfrom=:emailfrom",{"emailfrom":emailfrom})
+    db.commit()
+
+    return redirect(url_for('home'))

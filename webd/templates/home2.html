@@ -76,20 +76,26 @@ Home page
       </div>
       <br>
 
-      <div class="w3-card w3-round w3-white w3-center">
+            <div class="w3-card w3-round w3-white w3-center">
+        <form action="/acceptreq" class="form-floating" method="post">
         <div class="w3-container">
           <p>Friend Request</p>
-          <img src="static/pics/avatar6.png" alt="Avatar" style="width:50%"><br>
-          <span>Jane Doe</span>
+          {% if size!=0 %}
+          <img src="{{imginfo[0]}}" class="w3-circle" alt="Avatar" style="width:50%"><br>
+          <span>{{ nameinfo[0] }}</span>
           <div class="w3-row w3-opacity">
             <div class="w3-half">
-              <button class="w3-button w3-block w3-green w3-section" title="Accept"><i class="fa fa-check"></i></button>
+              <button class="w3-button w3-block w3-green w3-section" title="Accept" type="submit" value="1" name="Res"><i class="fa fa-check"></i></button>
             </div>
             <div class="w3-half">
-              <button class="w3-button w3-block w3-red w3-section" title="Decline"><i class="fa fa-remove"></i></button>
+              <button class="w3-button w3-block w3-red w3-section" title="Decline" type="submit" value="0" name="Res"><i class="fa fa-remove"></i></button>
             </div>
           </div>
+          {% else %}
+          <span>None</span>
+          {% endif %}
         </div>
+        </form>
       </div>
       <br>
 
