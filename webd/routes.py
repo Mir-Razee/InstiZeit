@@ -138,6 +138,5 @@ def getprofile(email):
 
 
 @app.route('/msg')
-@login_required
 def msg():
     return render_template("msg.html")

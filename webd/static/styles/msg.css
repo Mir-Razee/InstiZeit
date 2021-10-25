@@ -1,38 +1,46 @@
 #mainbox{
     margin-top: 50px;
 }
-#textbox{
-    position: absolute;
-    bottom: 2%;
-    width: 85% !important;
+
+#frnd-container{
+  padding: 2%;
+  height: 600px;
+  overflow: scroll;
 }
-.sendmsgicon{
-    width: 35px;
-    height: 35px;
+
+#grp-container{
+  padding: 2%;
+  height: 600px;
+  overflow: scroll;
+}
+
+#get-msgs{
+  width: 100%;
+  border: double black 0.5rem;
+  padding: 5%;
+  margin: 2%;
+}
+
+#btn-container{
+  padding: 0 !important;
+}
+#textbox{
+  width: 100%;
 }
 #sendmsg {
-	width: 45px;
-	height: 45px;
-    display: inline-block;
-    text-transform: uppercase;
-    background-color: rgb(218, 76, 10);
-    position: absolute;
-    bottom: 2%;
-    right: 2%;
-    border-radius: 50%;
-    margin: auto;
+  background-color: rgb(218, 76, 10);
+  border-radius: 50%;
 }
 .btn-border {
     border: 2px solid #fff;
     border-radius: 50%;
 }
-.sendmsgicon img{
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
+.sendmsgicon{
+  width: 100%;
+  height: auto;
 }
+
+
 .imessage {
     background-color: #fff;
     border: 1px solid #e5e5ea;
@@ -42,10 +50,10 @@
     font-family: "SanFrancisco";
     font-size: 1.25rem;
     margin: 0 auto 1rem;
-    min-height: 650px;
-    max-width: 700px;
+    height: 600px;
     padding: 0.5rem 1.5rem;
-    position: relative;
+    overflow: scroll;
+    /* position: relative; */
 }
   
   .imessage p {
@@ -180,13 +188,6 @@
     font-weight: normal;
     margin: 0;
   }
-  
-  .container {
-    margin: 0 auto;
-    max-width: 600px;
-    padding: 1rem;
-  }
-  
   h1 {
     font-weight: normal;
     margin-bottom: 0.5rem;
@@ -199,7 +200,6 @@
     margin-top: 0;
     padding-bottom: 1.5rem;
   }
-  
   .comment {
     color: #222;
     font-size: 1.25rem;
@@ -209,23 +209,3 @@
     padding: 0;
   }
   
-  @media screen and (max-width: 800px) {
-    body {
-      margin: 0 0.5rem;
-    }
-  
-    .container {
-      padding: 0.5rem;
-    }
-  
-    .imessage {
-      font-size: 1.05rem;
-      margin: 0 auto 1rem;
-      max-width: 600px;
-      padding: 0.25rem 0.875rem;
-    }
-  
-    .imessage p {
-      margin: 0.5rem 0;
-    }
-  }

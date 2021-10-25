@@ -12,23 +12,46 @@ Messages
 
 
 <div class="container" id="mainbox" >
-
-  <div class="imessage" id="msg-container">
-    <p class="from-them">It was loud. We just laid there and said &ldquo;is this an earthquake? I think this is an earthquake.&rdquo;</p>
-    <p class="from-me">Like is this an earthquake just go back to sleep</p>
-    <p class="from-them margin-b_one">It&rsquo;s more like &ldquo;this is an earthquake. Check the Internet. Yup. Earthquake. This is the size. This is the epicenter. Check social media. Make sure the East Coast knows I&rsquo;m alive. Okay, try and go back to sleep.&rdquo;</p>
-    <p class="from-me no-tail emoji">👍🏻</p>
-    <p class="from-me">Glad you&rsquo;re safe</p>
-
-    <div class="btn-container" >
-        <form action="form-control" id="msg">
-            <div class="mb-3">
-                <input type="text" class="form-control-lg" id="textbox" placeholder="Type a message here">
-                <button id="sendmsg" class="btn-border"><img src="https://i.cloudup.com/gBzAn-oW_S-2000x2000.png" class="sendmsgicon"></button>
-            </div>
-        </form>
+  <div class="row">
+    <div id ="frnd-container" class="col col-2">
+      <h2>Friends</h2>
     </div>
+    <div id ="grp-container" class="col col-2">
+      <h2>Groups</h2>
+      <button id="get-msgs" value="grp_id" class="btn btn-primary">Click me lmao</button>  
+      <button id="get-msgs" value="grp_id" class="btn btn-primary">Click me lmao</button>  
+      <button id="get-msgs" value="grp_id" class="btn btn-primary">Click me lmao</button>  
+      <button id="get-msgs" value="grp_id" class="btn btn-primary">Click me lmao</button>  
+    </div>
+  <div class="col col-8">
+    <div class="imessage" id="msg-container">
+      <p class="from-them">It was loud. We just laid there and said &ldquo;is this an earthquake? I think this is an earthquake.&rdquo;</p>
+      <p class="from-me">Like is this an earthquake just go back to sleep</p>
+      <p class="from-them margin-b_one">It&rsquo;s more like &ldquo;this is an earthquake. Check the Internet. Yup. Earthquake. This is the size. This is the epicenter. Check social media. Make sure the East Coast knows I&rsquo;m alive. Okay, try and go back to sleep.&rdquo;</p>
+      <p class="from-me no-tail emoji">👍🏻</p>
+      <p class="from-me">Glad you&rsquo;re safe</p>
+      <p class="from-me">Glad you&rsquo;re safe</p>
+      <p class="from-me">Glad you&rsquo;re safe</p>
+      <p class="from-me">Glad you&rsquo;re safe</p>
+      <p class="from-me">Glad you&rsquo;re safe</p>
+    </div>
+    <div class="btn-container" >
+      <form id="msg">
+          <div class="row">
+              <div class="col col-11" id="btn-container">
+                <input type="text" class="form-control-lg" id="textbox" placeholder="Type a message here">
+              </div>
+              <div class="col col-1" id="btn-container">
+                <button id="sendmsg" class="btn-border"><img src="https://i.cloudup.com/gBzAn-oW_S-2000x2000.png" class="sendmsgicon"></button>
+              </div>
+              
+          </div>
+      </form>
+    </div>
+    
   </div>
+  </div>
+  
 </div>
 <div id="log">
 </div>
@@ -37,23 +60,5 @@ Messages
   import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script>
-  $(document).ready(function(){
-    var socket = io();
-    console.log("Works");
-    socket.on('my response', function(msg) {
-        $('#msg-container').append('<p class="from-them">'+msg.data+'</p>');
-    });
-    $('form#msg').submit(function(event) {
-        socket.emit('my event', {data: $('#textbox').val()});
-        $('#msg-container').append('<p class="from-me">'+$('#textbox').val()+'</p>');
-        $('#textbox').val('');
-        return false;
-    });
-    $('form#broadcast').submit(function(event) {
-        socket.emit('my broadcast event', {data: $('#broadcast_data').val()});
-        return false;
-    });
-  });
-</script>
+<script src="{{ url_for('static', filename='js/msg.js') }}" ></script>
 {% endblock %}
