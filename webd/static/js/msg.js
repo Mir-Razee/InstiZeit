@@ -1,55 +1,71 @@
 $(document).ready(function () {
     var socket = io();
+
     $.ajax({
         type: 'GET',
         url: '/msg/getgrps',
         success: function (data) {
             obj = JSON.parse(data);
             for (var i = 0; i < obj.length; i++) {
-                $('#grp-container').append('<div class="grp_box">' + obj[i] + '</div>');
-            }
-        }
-    });
-    $.ajax({
-        type: 'GET',
-        url: '/msg/getfrnds',
-        success: function (data) {
-            obj = JSON.parse(data);
-            for (var i = 0; i < obj.length; i++) {
-                $('#frnd-container').append('<div class="frnd_box">' + obj[i] + '</div>');
+                if(obj[i][1].slice(0,6)=="friend"){
+                    $.ajax({
+                        type: 'GET',
+                        url: '/msg/name',
+                        data: {email1: obj[i][1].slice(6,29),email2:obj[i][1].slice(29),grp_id:obj[i][0]},
+                        success:function(data){
+                            data=JSON.parse(data);     
+                            $('#frnd-container').append(`<div class="grp_box"> <button id="get-msgs" value=${data[1]}  class="btn btn-primary">`+ data[0] + '</button> </div>');
+                        }
+                    });
+                }
+                else{
+                    $('#grp-container').append(`<div class="grp_box"> <button id="get-msgs" value="${obj[i][0]}" class="btn btn-primary">` + obj[i][1].slice(5) + '</button> </div>');
+                }
             }
         }
     });
 
     socket.on('my response', function (msg) {
-        if (msg.data) {
-            $('#msg-container').append('<p class="from-them">' + msg.data + '</p>');
+        var msg = JSON.parse(msg);
+        for (var i = 0; i < msg.length; i+=2) {
+            $('#msg-container').append('<p class="from-them">' + msg[i+1] + ':<br>' + msg[i][2] + '</p>');
         }
         scrollBottom();
     });
+
     socket.on('initial connect', function (msg) {
         var msg = JSON.parse(msg);
-        for (var i = 0; i < msg.length; i++) {
-            $('#msg-container').append('<p class="from-them">' + msg[i][1] + ':<br>' + msg[i][2] + '</p>');
+        for (var i = 0; i < msg.length; i+=2) {
+            $('#msg-container').append('<p class="from-them">' + msg[i+1] + ':<br>' + msg[i][2] + '</p>');
         }
         scrollBottom();
     });
+
     $('form#msg').submit(function (event) {
         if ($('#textbox').val()) {
-            $('#msg-container').append('<p class="from-me">' + $('#textbox').val() + '</p>');
-            socket.emit('my event', { data: $('#textbox').val() });
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            socket.emit('my event', { message: $('#textbox').val(), grp:$("#grp_identifier").val(),date:date,time:time});
             $('#textbox').val('');
+            $('#textbox').focus();
         }
         scrollBottom();
-        return false;
-    });
-    $('form#broadcast').submit(function (event) {
-        socket.emit('my broadcast event', { data: $('#broadcast_data').val() });
         return false;
     });
 
     $(document).on('click','#get-msgs',function(){
+        socket.emit('leave_room',{
+            room: $("#grp_identifier").val()
+        });
+        
         var grp=this.value;
+        $("#grp_identifier").attr("value",`${grp}`);
+        
+        socket.emit('join_room',{
+            room:`${grp}`
+        });
+
         $.ajax({
             type: 'GET',
             url: '/msg/get_msgs',
@@ -60,8 +76,8 @@ $(document).ready(function () {
                 while(cont.firstChild){
                     cont.removeChild(cont.firstChild);
                 }
-                for (var i = 0; i < obj.length; i++) {
-                    $('#msg-container').append('<p class="from-them">' + obj[i][1] + ':<br>' + obj[i][2] + '</p>');
+                for (var i = 0; i < obj.length; i+=2) {
+                    $('#msg-container').append('<p class="from-them">' + obj[i+1] + ':<br>' + obj[i][2] + '</p>');
                     scrollBottom();
                 }
             }

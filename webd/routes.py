@@ -188,6 +188,11 @@ def accreq(session=session):
     if response=="1":
         db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email1":emailto, "email2":requests[0]})
         db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email2":emailto, "email1":requests[0]})
+        db.execute("insert into group_chat(group_name) VALUES (CONCAT('friend',:email1,:email2))",{"email1":emailto,"email2":requests[0]})
+        group_id=db.execute("select group_id from group_chat where group_name=CONCAT('friend',:email1,:email2)",{"email1":emailto,"email2":requests[0]}).fetchone()
+        group_id=group_id[0]
+        db.execute("insert into group_users values(:group_id,:email1)",{"group_id":group_id,"email1":emailto})
+        db.execute("insert into group_users values(:group_id,:email2)",{"group_id":group_id,"email2":requests[0]})
         db.commit()
 
     db.execute("DELETE FROM friendreq WHERE emailfrom=:emailfrom",{"emailfrom":emailfrom})
