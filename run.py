@@ -1,4 +1,4 @@
-from webd import app
+from webd import application
 
 if __name__=='__main__':
-    app.run(debug=True)
+    application.run(debug=True)

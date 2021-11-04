@@ -2,14 +2,14 @@ from flask import Flask, render_template,redirect,session
 from flask.globals import request
 from flask.helpers import url_for
 from flask_socketio import SocketIO, emit, join_room, leave_room, send
-from webd import app,db
+from webd import application ,db
 import json
 
 from webd.decorator import login_required
 
-socketio = SocketIO(app)
+socketio = SocketIO(application)
 
-@app.route('/msg/name')
+@application.route('/msg/name')
 def getname():
     email1=request.args.get("email1")
     email2=request.args.get("email2")
@@ -25,7 +25,7 @@ def getname():
     data=json.dumps(name)
     return data
 
-@app.route('/msg/getgrps')
+@application.route('/msg/getgrps')
 def getgrps():
     user = dict(session).get('profile', None)
     email=user.get('email')
@@ -33,11 +33,11 @@ def getgrps():
     grp=db.execute("select group_id from group_users where user_id=:email",{"email":email}).fetchall()
     for row in grp:
         grp_name=db.execute("select * from group_chat where group_id=:group_id",{"group_id":list(row)[0]}).fetchone()
-        grps.append(list(grp_name))
+        grps.applicationend(list(grp_name))
     grps=json.dumps(grps)
     return grps
 
-@app.route('/msg/get_msgs')
+@application.route('/msg/get_msgs')
 def getmsgs():
     grp_id=request.args.get('id')
     # user = dict(session).get('profile', None)
@@ -119,4 +119,4 @@ def test_disconnect():
     print('Client disconnected')
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(application)

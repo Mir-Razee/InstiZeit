@@ -7,24 +7,24 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from imgurpython import ImgurClient
 from datetime import datetime
 import sys
-app = Flask(__name__)
+application = Flask(__name__)
 
 from dotenv import load_dotenv
 load_dotenv()
 
 UPLOAD_FOLDER = 'D:\\imgur'
 # Session config
-app.secret_key = 'super-secret-key'
-app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+application.secret_key = 'super-secret-key'
+application.config['SESSION_COOKIE_NAME'] = 'google-login-session'
+application.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
+application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # oAuth Setup
-oauth = OAuth(app)
+oauth = OAuth(application)
 google = oauth.register(
     name='google',
-    client_id='220667430071-j0aoshm8dstq6fvluqtrfiirnl59o6a9.apps.googleusercontent.com',
-    client_secret='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',
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_PASSWORD"),
     access_token_url='https://accounts.google.com/o/oauth2/token',
     access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',

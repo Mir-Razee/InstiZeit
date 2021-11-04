@@ -53,7 +53,16 @@ Home page
         {% elif ap[i][5] %}
         <img src="{{ap[i][5]}}" style="width:100%" class="w3-margin-bottom" referrerpolicy="no-referrer">
         {% endif %}
-        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
+        <button onclick="location.href='/likes/{{i+1}}';" type="button" class="w3-button w3-theme-d1 w3-margin-bottom">
+          <i class="fa fa-thumbs-up"></i>
+          {% if ap[i][6] == 0 %}
+           Like
+          {% elif ap[i][6] == 1 %}
+           1 Like
+          {% else %}
+           {{ap[i][6]}} Likes
+          {% endif %}
+        </button>
         <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
       </div>
       {% endfor %}

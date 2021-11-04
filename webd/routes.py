@@ -1,4 +1,4 @@
-from webd import app, db, datetime
+from webd import application, db, datetime
 from flask import redirect, url_for, session, render_template, request, flash
 from werkzeug.utils import secure_filename
 from webd import oauth, client
@@ -16,7 +16,7 @@ def upload(client, img_path):
     print("Done")
     return image['link']
 
-@app.route("/")
+@application.route("/")
 def home(session=session):
     user = dict(session).get('profile', None)
     if user:
@@ -48,13 +48,13 @@ def home(session=session):
 
     return render_template('landing.html')
 
-@app.route('/login')
+@application.route('/login')
 def login():
     google = oauth.create_client('google')  # create the google oauth client
     redirect_uri = url_for('authorize', _external=True)
     return google.authorize_redirect(redirect_uri)
 
-@app.route('/authorize')
+@application.route('/authorize')
 def authorize():
     google = oauth.create_client('google')  # create the google oauth client
     token = google.authorize_access_token()  # Access token from google (needed to get user info)
@@ -67,13 +67,13 @@ def authorize():
     session.permanent = True  # make the session permanant so it keeps existing after browser gets closed
     return redirect(url_for('home')) ##
 
-@app.route('/logout')
+@application.route('/logout')
 def logout():
     for key in list(session.keys()):
         session.pop(key)
     return redirect('/')
 
-@app.route('/register', methods=["GET","POST"])
+@application.route('/register', methods=["GET","POST"])
 @login_required
 def register(session=session):
     user = dict(session).get('profile', None)
@@ -94,7 +94,7 @@ def register(session=session):
 
     return render_template("register_profile.html",email=email,name=name,pic=pic)
 
-@app.route('/profile')
+@application.route('/profile')
 @login_required
 def profile(session=session):
     user = dict(session).get('profile', None)
@@ -107,7 +107,7 @@ def profile(session=session):
 
     return render_template('profile.html', pict=pict,table=table_data)
 
-@app.route('/posts', methods=['POST', 'GET'])
+@application.route('/posts', methods=['POST', 'GET'])
 @login_required
 def posts(session=session):
     if request.method == "POST":
@@ -120,13 +120,13 @@ def posts(session=session):
         url1 = None; url2 = None;
         if i1.filename != '':
             filename = secure_filename(i1.filename)
-            u1 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            u1 = os.path.join(application.config['UPLOAD_FOLDER'], filename)
             i1.save(u1)
             url1 = upload(client, u1)
             print(filename, u1, url1)
         if i2.filename != '':
             filename = secure_filename(i2.filename)
-            u2 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            u2 = os.path.join(application.config['UPLOAD_FOLDER'], filename)
             i2.save(u2)
             url2 = upload(client, u2)
             print(filename, u2, url2)
@@ -134,14 +134,15 @@ def posts(session=session):
         user = dict(session).get('profile', None)
         email = user.get("email")
 
-        db.execute("INSERT INTO posts(By_User, Data, Datetime, url1, url2) VALUES(:By_User, :Data, :Datetime, :url1, :url2)",
+        db.execute('''INSERT INTO posts(By_User, Data, Datetime, url1, url2, no_of_likes) 
+        VALUES(:By_User, :Data, :Datetime, :url1, :url2, '0')''',
                    {"By_User":email, "Data":text, "Datetime":dt, "url1":url1, "url2":url2})
         db.commit()
 
         return redirect(url_for('home'))
     return render_template('posts.html')
 
-@app.route('/@/<email>')
+@application.route('/@/<email>')
 @login_required
 def getprofile(email):
     print(email, type(email))
@@ -151,11 +152,11 @@ def getprofile(email):
     return "No User Found"
 
 
-@app.route('/msg')
+@application.route('/msg')
 def msg():
     return render_template("msg.html")
 
-@app.route('/addfr')
+@application.route('/addfr')
 def addfr(session=session):
     user = dict(session).get('profile',None)
     email = user.get('email')
@@ -164,7 +165,7 @@ def addfr(session=session):
         result[i] = result[i][0]
     return render_template('AF.html',result=result,size=len(result))
 
-@app.route('/sendreq', methods=["POST","GET"])
+@application.route('/sendreq', methods=["POST","GET"])
 def sendreq(session=session):
     user = dict(session).get('profile',None)
     emailfrom = user.get("email")
@@ -174,7 +175,7 @@ def sendreq(session=session):
     db.commit()
     return redirect(url_for('home'))
 
-@app.route('/acceptreq', methods=['POST','GET'])
+@application.route('/acceptreq', methods=['POST','GET'])
 def accreq(session=session):
     user = dict(session).get('profile', None)
     emailto = user.get("email")
@@ -199,3 +200,31 @@ def accreq(session=session):
     db.commit()
 
     return redirect(url_for('home'))
+
+
+@application.route('/likes/<post_id>', methods=['POST','GET'])
+@login_required
+def likes(post_id):
+    user = dict(session).get('profile', None)
+    email = user.get("email")
+    check_post = db.execute("SELECT * FROM posts where post_id = :post_id", {"post_id": post_id}).fetchone()
+    print(check_post)
+
+    if check_post is None:
+        return "Invalid request"
+    no_of_likes = check_post[6]
+    check_like = db.execute("SELECT * FROM likes where post_id=:post_id and by_email=:by_email",
+                            {"post_id": post_id, "by_email": email}).fetchone()
+    if check_like:
+        no_of_likes = no_of_likes - 1
+        db.execute("DELETE FROM likes where post_id=:post_id and by_email=:by_email",
+                   {"post_id": post_id, "by_email": email})
+        db.execute("UPDATE posts SET no_of_likes=:nol WHERE post_id=:post_id", {"nol": no_of_likes, "post_id": post_id})
+        db.commit()
+    else:
+        no_of_likes = no_of_likes + 1
+        db.execute("INSERT INTO likes VALUES(:post_id ,:by_email)",
+                   {"post_id": post_id, "by_email": email})
+        db.execute("UPDATE posts SET no_of_likes=:nol WHERE post_id=:post_id", {"nol": no_of_likes, "post_id": post_id})
+        db.commit()
+    return redirect(url_for("home"))
