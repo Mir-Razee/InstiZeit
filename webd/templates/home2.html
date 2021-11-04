@@ -33,9 +33,9 @@ Home page
       </div>
       {% for i in range(ap|length-1, -1, -1) %}
       <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-        <img src="{{pi[i][1]}}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+        <a href="/@/{{ap[i][1]}}"><img src="{{pi[i][1]}}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px"></a>
         <span class="w3-right w3-opacity">{{ap[i][3]}}</span>
-        <h4>{{pi[i][0]}}</h4><br>
+        <h4><a href="/@/{{ap[i][1]}}">{{pi[i][0]}}</a></h4><br>
         <hr class="w3-clear">
         <p>{{ap[i][2]}}</p>
         {% if ap[i][4] and ap[i][5] %}

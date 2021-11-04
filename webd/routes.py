@@ -145,7 +145,11 @@ def posts(session=session):
 @application.route('/@/<email>')
 @login_required
 def getprofile(email):
-    print(email, type(email))
+    user = dict(session).get('profile', None)
+    login_email = user.get("email")
+    if email == login_email:
+        return redirect(url_for("profile"))
+
     CHECK_USER = db.execute("SELECT * FROM profile where email=:email", {"email":email}).fetchone();
     if CHECK_USER:
         return render_template("getprofile.html", data=CHECK_USER)
@@ -212,6 +216,11 @@ def likes(post_id):
 
     if check_post is None:
         return "Invalid request"
+
+    post_email = check_post[1]
+    if email == post_email:
+        return redirect(url_for("home"))
+
     no_of_likes = check_post[6]
     check_like = db.execute("SELECT * FROM likes where post_id=:post_id and by_email=:by_email",
                             {"post_id": post_id, "by_email": email}).fetchone()
