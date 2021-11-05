@@ -22,6 +22,12 @@ def home(session=session):
     if user:
         email = user.get("email")
         CHECK_USER = db.execute("SELECT * FROM profile where email=:email", {"email": email}).fetchone()
+        mails = db.execute("SELECT email from profile").fetchall()
+        pics = db.execute("SELECT imgurl from profile").fetchall()
+        for i in range(len(mails)):
+            mails[i] = mails[i][0]
+            pics[i] = pics[i][0]
+        D = dict(zip(mails, pics))
         if CHECK_USER:
             emailto = user.get("email")
             requests = db.execute("SELECT emailfrom FROM friendreq WHERE emailto =:emailto",
@@ -39,10 +45,20 @@ def home(session=session):
                 imginfo[i] = imginfo[i][0]
             ALL_POSTS = db.execute("SELECT * FROM posts").fetchall()
             post_info = []
+            all_likes = []
+            all_likes2 = []
             for i in ALL_POSTS:
                 info = db.execute("SELECT name, imgurl FROM profile where email=:i", {"i": i[1]}).fetchone()
+                by_likes = db.execute("SELECT by_email from likes where post_id =:post_id", {"post_id":i[0]}).fetchall()
+                dy_likes = [0]*len(by_likes)
+                all_likes2.append(by_likes)
+                for j in range (len(by_likes)):
+                    dy_likes[j] = (D[by_likes[j][0]])
+                all_likes.append(dy_likes)
                 post_info.append(info)
-            return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info,nameinfo=nameinfo,size=len(nameinfo),imginfo=imginfo)
+            print(all_likes)
+            print(all_likes2)
+            return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info,nameinfo=nameinfo,size=len(nameinfo),imginfo=imginfo, al=all_likes, al2=all_likes2)
         else:
             return redirect(url_for('register'))
 
@@ -237,3 +253,16 @@ def likes(post_id):
         db.execute("UPDATE posts SET no_of_likes=:nol WHERE post_id=:post_id", {"nol": no_of_likes, "post_id": post_id})
         db.commit()
     return redirect(url_for("home"))
+
+@application.route('/show_likes/<post_id>', methods=['POST','GET'])
+@login_required
+def show_likes(post_id):
+    check_post = db.execute("SELECT * FROM posts where post_id = :post_id", {"post_id": post_id}).fetchone()
+    print(check_post)
+
+    if check_post is None:
+        return "Invalid request"
+
+    get_like_users = db.execute("SELECT by_email from likes where post_id =:post_id", {"post_id":post_id}).fetchall()
+    print(get_like_users)
+
