@@ -33,7 +33,7 @@ def getgrps():
     grp=db.execute("select group_id from group_users where user_id=:email",{"email":email}).fetchall()
     for row in grp:
         grp_name=db.execute("select * from group_chat where group_id=:group_id",{"group_id":list(row)[0]}).fetchone()
-        grps.applicationend(list(grp_name))
+        grps.append(list(grp_name))
     grps=json.dumps(grps)
     return grps
 
