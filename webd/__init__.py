@@ -4,7 +4,6 @@ import os
 from datetime import timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from imgurpython import ImgurClient
 from datetime import datetime
 import sys
 application = Flask(__name__)
@@ -12,7 +11,7 @@ application = Flask(__name__)
 from dotenv import load_dotenv
 load_dotenv()
 
-UPLOAD_FOLDER = 'D:\\imgur'
+UPLOAD_FOLDER = 'media'
 # Session config
 application.secret_key = 'super-secret-key'
 application.config['SESSION_COOKIE_NAME'] = 'google-login-session'
@@ -46,7 +45,6 @@ conn.close()
 
 db = scoped_session(sessionmaker(bind=engine))
 
-client = ImgurClient(os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET"))
 
 from webd import msg
 

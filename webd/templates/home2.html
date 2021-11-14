@@ -10,6 +10,7 @@ Home page
 {% block content %}
 <body>
 <!-- Page Container -->
+
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
   <!-- The Grid -->
   <div class="w3-row m3">
@@ -32,7 +33,7 @@ Home page
         </div>
       </div>
       {% for i in range(ap|length-1, -1, -1) %}
-      <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+      <div class="w3-container w3-card w3-white w3-round w3-margin" id="post"><br>
         <a href="/@/{{ap[i][1]}}"><img src="{{pi[i][1]}}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px"></a>
         <span class="w3-right w3-opacity">{{ap[i][3]}}</span>
         <h4><a href="/@/{{ap[i][1]}}">{{pi[i][0]}}</a></h4><br>

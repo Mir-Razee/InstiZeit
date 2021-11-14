@@ -1,25 +1,127 @@
 from webd import application, db, datetime
 from flask import redirect, url_for, session, render_template, request, flash
 from werkzeug.utils import secure_filename
-from webd import oauth, client
+from webd import oauth
 import os
 from webd.decorator import login_required
+import requests
+import json
 
-def upload(client, img_path):
-
-    config = {
-        'album': '2c0C92u',
+def createFolder(name):
+    params = {
+        "grant_type": "refresh_token",
+        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+        "client_secret": os.getenv("GOOGLE_CLIENT_PASSWORD"),
+        "refresh_token": os.getenv("REFRESH_TOKEN")
     }
 
-    print("Uploading image... ")
-    image = client.upload_from_path(img_path, anon=False)
-    print("Done")
-    return image['link']
+    authorization_url = "https://www.googleapis.com/oauth2/v4/token"
+    r1 = requests.post(authorization_url, data=params)
+    # print(r1.text)
+    # print(r1.json()["access_token"])
+    if r1.ok:
+        acc_token = r1.json()["access_token"]
+        # print(acc_token)
+        url = 'https://www.googleapis.com/drive/v3/files'
+        headers = {
+            'Authorization': 'Bearer {}'.format(acc_token),
+            'Content-Type': 'application/json'
+        }
+
+        metadata = {
+            'name': name,
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        response = requests.post(url, headers=headers, data=json.dumps(metadata))
+        # print(response.json())
+        id = response.json()["id"]
+        # print(response.txt)
+        # print(id)
+        return id
+
+def shareFolder(email1,id):
+    params = {
+        "grant_type": "refresh_token",
+        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+        "client_secret": os.getenv("GOOGLE_CLIENT_PASSWORD"),
+        "refresh_token": os.getenv("REFRESH_TOKEN")
+    }
+
+    authorization_url = "https://www.googleapis.com/oauth2/v4/token"
+    r1 = requests.post(authorization_url, data=params)
+    # print(r1.text)
+    # print(r1.json()["access_token"])
+    if r1.ok:
+        acc_token = r1.json()["access_token"]
+        # print(acc_token)
+        url = 'https://www.googleapis.com/drive/v3/files'
+        headers = {
+            'Authorization': 'Bearer {}'.format(acc_token),
+            'Content-Type': 'application/json'
+        }
+        user_permission = {
+            'type': 'user',
+            'role': 'writer',
+            'emailAddress': str(email1)
+        }
+        r = requests.post('https://www.googleapis.com/drive/v3/files/{}/permissions'.format(id),
+                          data=json.dumps(user_permission), headers=headers)
+        # print(r.text)
+        if r.ok:
+            print("Done")
+        else:
+            print("error- Folder not shared")
+
+
+def upload_media(media):
+    filename = secure_filename(media.filename)
+    u1 = os.path.join(application.config['UPLOAD_FOLDER'], filename)
+    media.save(u1)
+    params = {
+        "grant_type": "refresh_token",
+        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+        "client_secret": os.getenv("GOOGLE_CLIENT_PASSWORD"),
+        "refresh_token": os.getenv("REFRESH_TOKEN")
+    }
+
+    authorization_url = "https://www.googleapis.com/oauth2/v4/token"
+
+    r1 = requests.post(authorization_url, data=params)
+    # print(r1.text)
+    # print(r1.json())
+    # print(r1.json()["access_token"])
+
+    if r1.ok:
+        acc_token = r1.json()["access_token"]
+        print(acc_token)
+        headers = {
+            "Authorization": "Bearer" + " " + acc_token
+        }
+        para = {
+            "name": filename,
+            "parents": ["1WpBCl3uw8uWE5gMfSb1G-Q2bPhAAlNOE"]
+        }
+        files = {
+            'data': ('metadata', json.dumps(para), 'application/json; charset=UTF-8'),
+            'file': open(u1, "rb")
+        }
+        r = requests.post(
+            "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+            headers=headers,
+            files=files
+        )
+        print(r.text)
+        data = r.json()
+        print(data["id"])
+        url = "https://drive.google.com/uc?id=" + data["id"]
+        return url
+    print("drive upload error")
 
 @application.route("/")
 def home(session=session):
     user = dict(session).get('profile', None)
     if user:
+        # print(user)
         email = user.get("email")
         CHECK_USER = db.execute("SELECT * FROM profile where email=:email", {"email": email}).fetchone()
         mails = db.execute("SELECT email from profile").fetchall()
@@ -56,8 +158,8 @@ def home(session=session):
                     dy_likes[j] = (D[by_likes[j][0]])
                 all_likes.append(dy_likes)
                 post_info.append(info)
-            print(all_likes)
-            print(all_likes2)
+            # print(all_likes)
+            # print(all_likes2)
             return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info,nameinfo=nameinfo,size=len(nameinfo),imginfo=imginfo, al=all_likes, al2=all_likes2)
         else:
             return redirect(url_for('register'))
@@ -117,7 +219,7 @@ def profile(session=session):
     pict=user.get("picture")
     email = user.get("email")
     table_data = db.execute("SELECT * FROM profile WHERE email =:email", {"email": email}).fetchone()
-    print(table_data)
+    # print(table_data)
     if table_data==None:
         return redirect(url_for("register"))
 
@@ -132,26 +234,19 @@ def posts(session=session):
         text = request.form.get('text')
         i1 = request.files['u1']
         i2 = request.files['u2']
-        print(i1, i2, type(i1), type(i2))
+        # print(i1, i2, type(i1), type(i2))
         url1 = None; url2 = None;
+
         if i1.filename != '':
-            filename = secure_filename(i1.filename)
-            u1 = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-            i1.save(u1)
-            url1 = upload(client, u1)
-            print(filename, u1, url1)
+            url1 = upload_media(i1)
         if i2.filename != '':
-            filename = secure_filename(i2.filename)
-            u2 = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-            i2.save(u2)
-            url2 = upload(client, u2)
-            print(filename, u2, url2)
+            url2 = upload_media(i2)
 
         user = dict(session).get('profile', None)
         email = user.get("email")
 
-        db.execute('''INSERT INTO posts(By_User, Data, Datetime, url1, url2, no_of_likes) 
-        VALUES(:By_User, :Data, :Datetime, :url1, :url2, '0')''',
+        db.execute('''INSERT INTO posts(By_User, Data, Datetime, url1, url2, no_of_likes, no_of_comments) 
+        VALUES(:By_User, :Data, :Datetime, :url1, :url2, '0', '0')''',
                    {"By_User":email, "Data":text, "Datetime":dt, "url1":url1, "url2":url2})
         db.commit()
 
@@ -207,9 +302,14 @@ def accreq(session=session):
     response = request.form.get('Res')
     print(response,type(response))
     if response=="1":
+        name = "chat" + str(emailto) + str(emailfrom)
+        id = createFolder(name)
+        shareFolder(emailfrom, id)
+        shareFolder(emailto, id)
         db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email1":emailto, "email2":requests[0]})
         db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email2":emailto, "email1":requests[0]})
-        db.execute("insert into group_chat(group_name) VALUES (CONCAT('friend',:email1,:email2))",{"email1":emailto,"email2":requests[0]})
+        db.execute("insert into group_chat(group_name, folder_id) VALUES (CONCAT('friend',:email1,:email2), :folder_id)"
+                   ,{"email1":emailto,"email2":requests[0],"folder_id":id})
         group_id=db.execute("select group_id from group_chat where group_name=CONCAT('friend',:email1,:email2)",{"email1":emailto,"email2":requests[0]}).fetchone()
         group_id=group_id[0]
         db.execute("insert into group_users values(:group_id,:email1)",{"group_id":group_id,"email1":emailto})
@@ -261,17 +361,16 @@ def likes(post_id):
                    {"post_id": post_id, "by_email": email})
         db.execute("UPDATE posts SET no_of_likes=:nol WHERE post_id=:post_id", {"nol": no_of_likes, "post_id": post_id})
         db.commit()
-    return redirect(url_for("home"))
+    return redirect("/")
 
-@application.route('/show_likes/<post_id>', methods=['POST','GET'])
+@application.route('/comments/<post_id>', methods=['POST','GET'])
 @login_required
-def show_likes(post_id):
+def comments(post_id):
     check_post = db.execute("SELECT * FROM posts where post_id = :post_id", {"post_id": post_id}).fetchone()
-    print(check_post)
+    # print(check_post)
 
     if check_post is None:
         return "Invalid request"
 
-    get_like_users = db.execute("SELECT by_email from likes where post_id =:post_id", {"post_id":post_id}).fetchall()
-    print(get_like_users)
+    comms = db.execute("SELECT by_mail, text from comments where post_id ")
 
