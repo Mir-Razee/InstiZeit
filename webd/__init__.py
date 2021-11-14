@@ -15,7 +15,7 @@ UPLOAD_FOLDER = 'media'
 # Session config
 application.secret_key = 'super-secret-key'
 application.config['SESSION_COOKIE_NAME'] = 'google-login-session'
-application.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
+application.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)
 application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # oAuth Setup
