@@ -221,6 +221,15 @@ def accreq(session=session):
 
     return redirect(url_for('home'))
 
+@application.route('/addgrp')
+@login_required
+def addgrp():
+    return render_template('addgrp.html')
+
+@application.route('/creategrp')
+def creategrp():
+    return render_template('msg.html')
+
 
 @application.route('/likes/<post_id>', methods=['POST','GET'])
 @login_required

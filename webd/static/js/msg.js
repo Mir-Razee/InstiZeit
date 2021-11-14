@@ -8,15 +8,7 @@ $(document).ready(function () {
             obj = JSON.parse(data);
             for (var i = 0; i < obj.length; i++) {
                 if(obj[i][1].slice(0,6)=="friend"){
-                    $.ajax({
-                        type: 'GET',
-                        url: '/msg/name',
-                        data: {email1: obj[i][1].slice(6,29),email2:obj[i][1].slice(29),grp_id:obj[i][0]},
-                        success:function(data){
-                            data=JSON.parse(data);     
-                            $('#frnd-container').append(`<div class="grp_box"> <button id="get-msgs" value=${data[1]}  class="btn btn-primary">`+ data[0] + '</button> </div>');
-                        }
-                    });
+                    $('#frnd-container').append(`<div class="grp_box"> <button id="get-msgs" value=${obj[i][0]}  class="btn btn-primary">`+ obj[i][1].slice(6)+ '</button> </div>');
                 }
                 else{
                     $('#grp-container').append(`<div class="grp_box"> <button id="get-msgs" value="${obj[i][0]}" class="btn btn-primary">` + obj[i][1].slice(5) + '</button> </div>');
