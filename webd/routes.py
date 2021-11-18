@@ -167,6 +167,31 @@ def home(session=session):
 
     return render_template('landing.html')
 
+@application.route('/getdata')
+def getdata(session=session):
+    user = dict(session).get('profile', None)
+    email = user.get("email")
+    emailto = user.get("email")
+    nameinfo = db.execute(
+        "SELECT name FROM profile WHERE email = ANY(SELECT emailfrom FROM friendreq WHERE emailto =:emailto);",
+        {"emailto": emailto}).fetchall()
+    imginfo = db.execute(
+        "SELECT imgurl FROM profile WHERE email = ANY(SELECT emailfrom FROM friendreq WHERE emailto =:emailto);",
+        {"emailto": emailto}).fetchall()
+    for i in range(len(nameinfo)):
+        nameinfo[i] = nameinfo[i][0]
+    for i in range(len(nameinfo)):
+        imginfo[i] = imginfo[i][0]
+    print(nameinfo)
+    print(imginfo)
+    data=[]
+    for i in range(len(nameinfo)):
+        data.append(nameinfo[i])
+        data.append(imginfo[i])
+    print(data)
+    data = json.dumps(data)
+    return data
+
 @application.route('/login')
 def login():
     google = oauth.create_client('google')  # create the google oauth client
@@ -281,7 +306,27 @@ def addfr(session=session):
     result = db.execute("SELECT name FROM profile WHERE NOT email = ANY(SELECT email1 FROM friends WHERE email2=:email) AND NOT email=:email",{"email":email}).fetchall()
     for i in range(len(result)):
         result[i] = result[i][0]
-    return render_template('AF.html',result=result,size=len(result))
+    frlist = db.execute("SELECT name FROM profile WHERE email = ANY(SELECT email1 FROM friends WHERE email2=:email)",
+                        {"email": email}).fetchall()
+    for i in range(len(frlist)):
+        frlist[i] = frlist[i][0]
+    return render_template('AF.html', result=result, size=len(result), S=len(frlist), frlist=frlist)
+
+@application.route('/delete_fr/<dname>', methods=["POST"])
+def delete_fr(dname,session=session):
+    user = dict(session).get('profile', None)
+    email = user.get('email')
+    demail = db.execute("SELECT email FROM profile WHERE name=:dname", {"dname": dname}).fetchone()
+    demail=demail[0]
+    print(dname, demail)
+    group_name1 = "friend"+email+demail
+    group_name2 = "friend"+demail+email
+    db.execute("DELETE FROM group_chat WHERE group_name=:group_name1 OR group_name=:group_name2",{"group_name1":group_name1,"group_name2":group_name2})
+    db.execute("DELETE FROM friends WHERE email1=:demail AND email2=:email",{"demail":demail,"email":email})
+    db.execute("DELETE FROM friends WHERE email1=:email AND email2=:demail",{"demail":demail,"email":email})
+    db.commit()
+    print("Bye")
+    return redirect(url_for('addfr'))
 
 @application.route('/sendreq', methods=["POST","GET"])
 def sendreq(session=session):
@@ -324,9 +369,12 @@ def accreq(session=session):
         db.execute("insert into group_users values(:group_id,:email2)",{"group_id":group_id,"email2":requests[0]})
         db.commit()
 
-    db.execute("DELETE FROM friendreq WHERE emailfrom=:emailfrom",{"emailfrom":emailfrom})
-    db.commit()
+        db.execute("DELETE FROM friendreq WHERE emailfrom=:emailfrom",{"emailfrom":emailfrom})
+        db.commit()
 
+    elif response=="0":
+        db.execute("DELETE FROM friendreq WHERE emailfrom=:emailfrom", {"emailfrom": emailfrom})
+        db.commit()
     return redirect(url_for('home'))
 
 @application.route('/addgrp')
