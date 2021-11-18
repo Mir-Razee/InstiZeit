@@ -1,3 +1,4 @@
+from sqlalchemy import log
 from webd import application, db, datetime
 from flask import redirect, url_for, session, render_template, request, flash
 from werkzeug.utils import secure_filename
@@ -268,14 +269,16 @@ def getprofile(email):
 
 
 @application.route('/msg')
+@login_required
 def msg():
     return render_template("msg.html")
 
 @application.route('/addfr')
+@login_required
 def addfr(session=session):
     user = dict(session).get('profile',None)
     email = user.get('email')
-    result = db.execute("SELECT name FROM profile WHERE NOT email = ANY(SELECT email1 FROM friends) AND NOT email=:email",{"email":email}).fetchall()
+    result = db.execute("SELECT name FROM profile WHERE NOT email = ANY(SELECT email1 FROM friends WHERE email2=:email) AND NOT email=:email",{"email":email}).fetchall()
     for i in range(len(result)):
         result[i] = result[i][0]
     return render_template('AF.html',result=result,size=len(result))
@@ -285,9 +288,14 @@ def sendreq(session=session):
     user = dict(session).get('profile',None)
     emailfrom = user.get("email")
     to_name = request.form.get("myName")
-    emailto = db.execute("SELECT email FROM profile WHERE name=:name", {"name": to_name}).fetchone()[0]
-    db.execute("INSERT INTO friendreq(emailfrom, emailto, state) VALUES(:emailfrom, :emailto, 'Pending')",{"emailfrom":emailfrom,"emailto":emailto})
-    db.commit()
+    emailto = db.execute("SELECT email FROM profile WHERE name=:name", {"name": to_name}).fetchone()
+    if emailto:
+        emailto=emailto[0]
+        db.execute("INSERT INTO friendreq(emailfrom, emailto, state) VALUES(:emailfrom, :emailto, 'Pending')",{"emailfrom":emailfrom,"emailto":emailto})
+        db.commit()
+    else:
+        return redirect(url_for('addfr'))
+
     return redirect(url_for('home'))
 
 @application.route('/acceptreq', methods=['POST','GET'])
@@ -308,9 +316,9 @@ def accreq(session=session):
         shareFolder(emailto, id)
         db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email1":emailto, "email2":requests[0]})
         db.execute("INSERT INTO friends(email1, email2, status) VALUES(:email1, :email2, '1')",{"email2":emailto, "email1":requests[0]})
-        db.execute("insert into group_chat(group_name, folder_id) VALUES (CONCAT('friend',:email1,:email2), :folder_id)"
+        db.execute("insert into group_chat(group_name, folder_id) VALUES (CONCAT('friend',:email1,',',:email2), :folder_id)"
                    ,{"email1":emailto,"email2":requests[0],"folder_id":id})
-        group_id=db.execute("select group_id from group_chat where group_name=CONCAT('friend',:email1,:email2)",{"email1":emailto,"email2":requests[0]}).fetchone()
+        group_id=db.execute("select group_id from group_chat where group_name=CONCAT('friend',:email1,',',:email2)",{"email1":emailto,"email2":requests[0]}).fetchone()
         group_id=group_id[0]
         db.execute("insert into group_users values(:group_id,:email1)",{"group_id":group_id,"email1":emailto})
         db.execute("insert into group_users values(:group_id,:email2)",{"group_id":group_id,"email2":requests[0]})
@@ -326,9 +334,26 @@ def accreq(session=session):
 def addgrp():
     return render_template('addgrp.html')
 
-@application.route('/creategrp')
+@application.route('/creategrp', methods=['POST'])
 def creategrp():
-    return render_template('msg.html')
+    if request.method=='POST':
+        name=request.form.get("name")
+        db.execute("INSERT INTO group_chat (group_name) VALUES ( CONCAT('group',:name))",{"name":name})
+        group_id=db.execute("select max(group_id) from group_chat").fetchone()
+        group_id=group_id[0]
+        no=request.form.get("no_users")
+        no=int(no)
+        user = dict(session).get('profile', None)
+        email = user.get("email")
+        db.execute("insert into group_users values(:group_id,:user)",{"group_id":group_id,"user":email})
+        for i in range(no):
+            val='user_{}'.format(i)
+            user=request.form.get(val)
+            email = db.execute("SELECT email FROM profile WHERE name=:name", {"name": user}).fetchone()
+            email=email[0]
+            db.execute("insert into group_users values(:group_id,:user)",{"group_id":group_id,"user":email})
+        db.commit()
+    return redirect("/msg")
 
 
 @application.route('/likes/<post_id>', methods=['POST','GET'])

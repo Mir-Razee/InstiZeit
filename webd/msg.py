@@ -9,6 +9,17 @@ from webd.decorator import login_required
 
 socketio = SocketIO(application)
 
+@application.route('/getnames')
+def getnames():
+    user = dict(session).get('profile', None)
+    email=user.get('email')
+    name=db.execute("select name from profile where not email=:email",{"email":email}).fetchall()
+    data=[]
+    for row in name:
+        data.append(list(row))
+    data=json.dumps(data)
+    return data
+
 @application.route('/msg/name')
 def getname():
     email1=request.args.get("email1")

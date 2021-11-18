@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}
+Messages
+{% endblock %}
+
+{% block nav %}
+
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/grp.css') }}">
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+
+    <!--Make sure the form has the autocomplete function switched off:-->
+    <form autocomplete="off" action="/creategrp" class="form-floating" method="post">
+      <div>
+        <input type="text" id="name" name="name" placeholder="Name of the Group">
+      </div>
+      <div class="autocomplete" style="width:300px;" >
+        <input id="no_users" name="no_users" type="number" placeholder="Number of Group Members">
+      </div>
+      <div id="grp_users" name="grp_users" >
+      </div>
+      <button type="submit" class="btn w3-green">Create Group</button>
+    </form>
+</div>
+
+
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/grp.js') }}" ></script>
+{% endblock %}
