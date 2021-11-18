@@ -14,7 +14,7 @@
         <form action="/posts" method="POST" enctype="multipart/form-data">
             <div align="center"><p><textarea id="text" class="text" cols="30" rows ="10" name="text" maxlength="255"></textarea></p></div>
             <div class="w3-half" align="center">
-                <p><input type="file"  accept="image/*" name="u1" id="u1"  onchange="loadFile1(event)" style="display: none;"></p>
+                <p><input type="file"  accept="image/*, video/*, application/pdf" name="u1" id="u1"  onchange="loadFile1(event)" style="display: none;"></p>
                 <p><label for="u1" style="cursor: pointer;"><i class="fa fa-upload" style="font-size:36px"></i></label></p>
                 <p><img id="output1" width="200" /></p>
             </div>
