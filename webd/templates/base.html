@@ -22,23 +22,26 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 
 <body class="w3-theme-l5">
   <nav>
-    <div class="w3-top">
-        <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
-        {% block nav %}
-    
-        {% endblock %}
-      <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
-      <a href="{{url_for('home')}}" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
-      <a href="{{url_for('addfr')}}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Add Friends"><i class="fa fa-user"></i></a>
-      <a href="{{url_for('msg')}}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-envelope"></i></a>
-    
-      <a href="{{url_for('logout')}}" class="w3-bar-item w3-button w3-right w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-logout">LogOut</i></a>
-      <a href="{{url_for('profile')}}" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Profile">
-        <img src="static/pics/avatar2.png" class="w3-circle" style="height:23px;width:23px" alt="Avatar">
-      </a>
-     </div>
-    </div>
-    </nav>
+<div class="w3-top">
+    <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
+    {% block nav %}
+
+    {% endblock %}
+  <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+  <a href="{{url_for('home')}}" class="w3-bar-item w3-button w3-padding-large ">
+      <img src="static/pics/Logo.png" style="height:33px;width:33px" class="w3-circle">
+      InstiZeit
+  </a>
+  <a href="{{url_for('addfr')}}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Add Friends"><i class="fa fa-user"></i></a>
+  <a href="{{url_for('msg')}}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-envelope"></i></a>
+
+  <a href="{{url_for('logout')}}" class="w3-bar-item w3-button w3-right w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-logout">LogOut</i></a>
+  <a href="{{url_for('profile')}}" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Profile">
+    <img src="{{usrimg}}" class="w3-circle" style="height:23px;width:23px" alt="Avatar">
+  </a>
+ </div>
+</div>
+</nav>
     {% block content %}
 
     {% endblock %}

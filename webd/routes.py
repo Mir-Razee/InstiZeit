@@ -8,6 +8,12 @@ from webd.decorator import login_required
 import requests
 import json
 
+mails = db.execute("SELECT email from profile").fetchall()
+pics = db.execute("SELECT imgurl from profile").fetchall()
+for i in range(len(mails)):
+    mails[i] = mails[i][0]
+    pics[i] = pics[i][0]
+D = dict(zip(mails, pics))
 def createFolder(name):
     params = {
         "grant_type": "refresh_token",
@@ -165,11 +171,11 @@ def home(session=session):
                 post_info.append(info)
             # print(all_likes)
             # print(all_likes2)
-            return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info,nameinfo=nameinfo,size=len(nameinfo),imginfo=imginfo, al=all_likes, al2=all_likes2)
+            return render_template('home2.html', user=user, ap=ALL_POSTS, pi=post_info,nameinfo=nameinfo,size=len(nameinfo),imginfo=imginfo, al=all_likes, al2=all_likes2, usrimg=D[email])
         else:
             return redirect(url_for('register'))
 
-    return render_template('landing.html')
+    return render_template('land2.html')
 
 @application.route('/getdata')
 def getdata(session=session):
@@ -253,7 +259,7 @@ def profile(session=session):
     if table_data==None:
         return redirect(url_for("register"))
 
-    return render_template('profile.html', pict=pict,table=table_data)
+    return render_template('profile.html', pict=pict,table=table_data,usrimg=D[email])
 
 
 @application.route('/msg/media')
@@ -275,6 +281,9 @@ def media():
 @application.route('/posts', methods=['POST', 'GET'])
 @login_required
 def posts(session=session):
+    user = dict(session).get('profile', None)
+    email = user.get("email")
+
     if request.method == "POST":
         now = datetime.now()
         dt = now.strftime("%H:%M, %B %d")
@@ -296,8 +305,6 @@ def posts(session=session):
                 mimeType = "img"
             else:
                 mimeType = "pdf"
-        user = dict(session).get('profile', None)
-        email = user.get("email")
 
         db.execute('''INSERT INTO posts(By_User, Data, Datetime, url1, url2, no_of_likes, no_of_comments, post_type) 
         VALUES(:By_User, :Data, :Datetime, :url1, :url2, '0', '0', :post_type)''',
@@ -305,7 +312,7 @@ def posts(session=session):
         db.commit()
 
         return redirect(url_for('home'))
-    return render_template('posts.html')
+    return render_template('posts.html', usrimg=D[email])
 
 @application.route('/@/<email>')
 @login_required
@@ -317,14 +324,16 @@ def getprofile(email):
 
     CHECK_USER = db.execute("SELECT * FROM profile where email=:email", {"email":email}).fetchone();
     if CHECK_USER:
-        return render_template("getprofile.html", data=CHECK_USER)
+        return render_template("getprofile.html", data=CHECK_USER, usrimg=D[email])
     return "No User Found"
 
 
 @application.route('/msg')
 @login_required
-def msg():
-    return render_template("msg.html")
+def msg(session=session):
+    user = dict(session).get('profile', None)
+    email = user.get('email')
+    return render_template("msg.html", usrimg=D[email])
 
 @application.route('/addfr')
 @login_required
@@ -338,7 +347,7 @@ def addfr(session=session):
                         {"email": email}).fetchall()
     for i in range(len(frlist)):
         frlist[i] = frlist[i][0]
-    return render_template('AF.html', result=result, size=len(result), S=len(frlist), frlist=frlist)
+    return render_template('AF.html', result=result, size=len(result), S=len(frlist), frlist=frlist, usrimg=D[email])
 
 @application.route('/delete_fr/<dname>', methods=["POST"])
 def delete_fr(dname,session=session):
@@ -347,8 +356,8 @@ def delete_fr(dname,session=session):
     demail = db.execute("SELECT email FROM profile WHERE name=:dname", {"dname": dname}).fetchone()
     demail=demail[0]
     print(dname, demail)
-    group_name1 = "friend"+email+demail
-    group_name2 = "friend"+demail+email
+    group_name1 = "friend"+email+","+demail
+    group_name2 = "friend"+demail+","+email
     db.execute("DELETE FROM group_chat WHERE group_name=:group_name1 OR group_name=:group_name2",{"group_name1":group_name1,"group_name2":group_name2})
     db.execute("DELETE FROM friends WHERE email1=:demail AND email2=:email",{"demail":demail,"email":email})
     db.execute("DELETE FROM friends WHERE email1=:email AND email2=:demail",{"demail":demail,"email":email})
@@ -407,8 +416,10 @@ def accreq(session=session):
 
 @application.route('/addgrp')
 @login_required
-def addgrp():
-    return render_template('addgrp.html')
+def addgrp(session=session):
+    user = dict(session).get('profile', None)
+    email = user.get("email")
+    return render_template('addgrp.html', usrimg=D[email])
 
 @application.route('/creategrp', methods=['POST'])
 def creategrp():
@@ -496,7 +507,10 @@ def comments(post_id):
     return "Invalid Request(Add Comments)"
 
 @application.route("/getcomments/<post_id>")
-def getcomments(post_id):
+@login_required
+def getcomments(post_id, session=session):
+    user = dict(session).get('profile', None)
+    email = user.get("email")
     COMM = db.execute("SELECT * FROM comments where post_id= :post_id", {"post_id": post_id}).fetchall()
     if COMM is None:
         return "Invalid Request(Comments)"
@@ -522,7 +536,7 @@ def getcomments(post_id):
     for i in COMM:
         imgs.append(D2[i[1]])
         nms.append(D3[i[1]])
-    return render_template("getcomm.html", comm=COMM, post_id=post_id, imgs=imgs, nms=nms, ap=POST_INFO, details=details)
+    return render_template("getcomm.html", comm=COMM, post_id=post_id, imgs=imgs, nms=nms, ap=POST_INFO, details=details, usrimg=D[email])
 
 @application.route("/getmedia/<group_id>")
 def getmedia(group_id):

@@ -49,28 +49,7 @@ $(document).ready(function () {
     });
 
     $('form#msg').submit(function (event) {
-        event.preventDefault();
-        var formData = new FormData($('#msg')[0]);
-        var file=$("#media")[0].files[0];
-        formData.append("file",file);
-        if(file){
-            console.log(file);
-            console.log(formData);
-            var group_id= $("#grp_identifier").val();
-            $.ajax({
-                url: '/msg/media',
-                type: 'GET',
-                data: formData,
-                async: false,
-                success: function (data) {
-                    obj = JSON.parse(data);
-                    console.log(obj);
-                },
-                cache: false,
-                contentType: false,
-                processData: false
-            });
-        }
+
         if ($('#textbox').val()) {
             var today = new Date();
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
