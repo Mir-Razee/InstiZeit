@@ -255,6 +255,23 @@ def profile(session=session):
 
     return render_template('profile.html', pict=pict,table=table_data)
 
+
+@application.route('/msg/media')
+def media():
+    user = dict(session).get('profile', None)
+    email=user.get('email')
+    file =request.args.get("formdata")
+    group_id=request.args.get("group_id")
+    print(file)
+    print("otu")
+    if(file):
+        u1=upload_media(file)
+        print(u1)
+        print("kek")
+    data=[]
+    data=json.dumps(data)
+    return data
+
 @application.route('/posts', methods=['POST', 'GET'])
 @login_required
 def posts(session=session):

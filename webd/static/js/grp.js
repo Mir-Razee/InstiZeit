@@ -103,22 +103,20 @@ $(document).ready(function () {
             container.removeChild(container.firstChild);
         }
         for(var i=0;i<number;i++){
-            $('#grp_users').append(`<div class="autocomplete" style="width:300px;"> <input id="users" name="user_${i}" type="text" placeholder="User ${i}"> </div>`);
-            
-            // $.ajax({
-            //     type: 'GET',
-            //     url: '/getnames',
-            //     success:function(data){
-            //         data=JSON.parse(data);
-            //         var name=[];
-            //         for(var i=0;i<data.length;i++){
-            //             name.push(`${data[i]}`);
-            //         }
-            //         autocomplete(document.getElementById('users'), name);
-            //     }
-            // });
+            $('#grp_users').append(`<div class="form-floating" style="width:300px;"> <input class="form-control" id="users" name="user_${i}" type="text" placeholder="User ${i+1}"> </div>`);
         }
-    })
-
+    //     $.ajax({
+    //       type: 'GET',
+    //       url: '/getnames',
+    //       success:function(data){
+    //           data=JSON.parse(data);
+    //           var name=[];
+    //           for(var i=0;i<data.length;i++){
+    //               name.push(`${data[i]}`);
+    //           }
+    //           autocomplete(document.getElementById('users'), name);
+    //       }
+    // })
+});
         
 });

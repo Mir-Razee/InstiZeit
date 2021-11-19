@@ -23,6 +23,10 @@
     background-color: #f1f1f1;
     width: 100%;
   }
+  input[type=number] {
+    background-color: #f1f1f1;
+    width: 100%;
+  }
   
   input[type=submit] {
     background-color: DodgerBlue;
@@ -59,3 +63,14 @@
     background-color: DodgerBlue !important;
     color: #ffffff;
   }
+
+  .form-floating{
+    padding: 10px;
+}
+.form{
+    text-align: center;
+    width: 50%;
+    margin: auto;
+    padding: 20px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
