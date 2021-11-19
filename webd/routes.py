@@ -89,18 +89,21 @@ def upload_media(media):
 
     r1 = requests.post(authorization_url, data=params)
     # print(r1.text)
-    # print(r1.json())
-    # print(r1.json()["access_token"])
-
+    print(r1.json())
+    print(r1.json()["access_token"])
+    # "parents": ["1WpBCl3uw8uWE5gMfSb1G-Q2bPhAAlNOE"]
     if r1.ok:
         acc_token = r1.json()["access_token"]
         print(acc_token)
+        # headers = {
+        #     "Authorization": "Bearer" + " " + acc_token
+        # }
         headers = {
-            "Authorization": "Bearer" + " " + acc_token
+            'Authorization': 'Bearer {}'.format(acc_token)
         }
         para = {
             "name": filename,
-            "parents": ["1WpBCl3uw8uWE5gMfSb1G-Q2bPhAAlNOE"]
+            "parents": ["18RQ2XbK-w_maCqAD6mkD8EvTHskggYMH"]
         }
         files = {
             'data': ('metadata', json.dumps(para), 'application/json; charset=UTF-8'),
@@ -114,8 +117,9 @@ def upload_media(media):
         print(r.text)
         data = r.json()
         print(data["id"])
+        print(data)
         url = "https://drive.google.com/uc?id=" + data["id"]
-        return url
+        return url, data["mimeType"]
     print("drive upload error")
 
 @application.route("/")
@@ -278,19 +282,26 @@ def posts(session=session):
         i1 = request.files['u1']
         i2 = request.files['u2']
         # print(i1, i2, type(i1), type(i2))
-        url1 = None; url2 = None;
+        url1 = None; url2 = None; mimeType = None;
 
         if i1.filename != '':
-            url1 = upload_media(i1)
+            url1, mimeType = upload_media(i1)
         if i2.filename != '':
-            url2 = upload_media(i2)
+            url2, abcdf = upload_media(i2)
 
+        if mimeType is not None:
+            if mimeType[0] == 'v':
+                mimeType = "vid"
+            elif mimeType[0] == 'i':
+                mimeType = "img"
+            else:
+                mimeType = "pdf"
         user = dict(session).get('profile', None)
         email = user.get("email")
 
-        db.execute('''INSERT INTO posts(By_User, Data, Datetime, url1, url2, no_of_likes, no_of_comments) 
-        VALUES(:By_User, :Data, :Datetime, :url1, :url2, '0', '0')''',
-                   {"By_User":email, "Data":text, "Datetime":dt, "url1":url1, "url2":url2})
+        db.execute('''INSERT INTO posts(By_User, Data, Datetime, url1, url2, no_of_likes, no_of_comments, post_type) 
+        VALUES(:By_User, :Data, :Datetime, :url1, :url2, '0', '0', :post_type)''',
+                   {"By_User":email, "Data":text, "Datetime":dt, "url1":url1, "url2":url2, "post_type": mimeType})
         db.commit()
 
         return redirect(url_for('home'))
@@ -456,11 +467,30 @@ def likes(post_id):
 @application.route('/comments/<post_id>', methods=['POST','GET'])
 @login_required
 def comments(post_id):
+    user = dict(session).get('profile', None)
+    email = user.get("email")
     check_post = db.execute("SELECT * FROM posts where post_id = :post_id", {"post_id": post_id}).fetchone()
-    # print(check_post)
+    print(check_post)
 
     if check_post is None:
         return "Invalid request"
 
-    comms = db.execute("SELECT by_mail, text from comments where post_id ")
-
+    post_email = check_post[1]
+    text = request.form.get("text")
+    no_of_comments = check_post[7]
+    check_comment = db.execute("SELECT * FROM comments where post_id=:post_id and by_email=:by_email",
+                            {"post_id": post_id, "by_email": email}).fetchone()
+    if check_comment:
+        db.execute("DELETE FROM comments where post_id=:post_id and by_email=:by_email",
+                   {"post_id": post_id, "by_email": email})
+        db.commit()
+        db.execute("INSERT INTO comments VALUES(:post_id ,:by_email, :text)",
+                   {"post_id": post_id, "by_email": email, "text": text})
+        db.commit()
+    else:
+        no_of_comments = no_of_comments + 1
+        db.execute("INSERT INTO comments VALUES(:post_id ,:by_email, :text)",
+                   {"post_id": post_id, "by_email": email, "text": text})
+        db.execute("UPDATE posts SET no_of_comments=:noc WHERE post_id=:post_id", {"noc": no_of_comments, "post_id": post_id})
+        db.commit()
+    return redirect("/")
