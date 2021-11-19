@@ -57,7 +57,7 @@ Home page
         {% endif %}
         {% endif %}
         {% if ap[i][8] == "vid" %}
-        <iframe src="{{ap[i][4]}}" style="width:100%;" ></iframe>
+        <iframe src="{{ap[i][4]}}" style="width:100%; height:500px" ></iframe>
         {% endif %}
         {% if ap[i][8] == "pdf" %}
         <iframe src="{{ap[i][4]}}" style="width:100%; height:500px" ></iframe>
@@ -72,7 +72,7 @@ Home page
            {{ap[i][6]}} Likes
           {% endif %}
         </button>
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button> <br>
+        <button type="button" onclick="location.href='/getcomments/{{ap[i][0]}}';" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button> <br>
         {% if al[i]|length %}
         <div> Liked by: </div>
         {% for j in range(al[i]|length) %}

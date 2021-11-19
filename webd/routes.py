@@ -450,30 +450,67 @@ def likes(post_id):
 @application.route('/comments/<post_id>', methods=['POST','GET'])
 @login_required
 def comments(post_id):
-    user = dict(session).get('profile', None)
-    email = user.get("email")
-    check_post = db.execute("SELECT * FROM posts where post_id = :post_id", {"post_id": post_id}).fetchone()
-    print(check_post)
+    if request.method == 'POST':
+        user = dict(session).get('profile', None)
+        email = user.get("email")
+        check_post = db.execute("SELECT * FROM posts where post_id = :post_id", {"post_id": post_id}).fetchone()
+        print(check_post)
 
-    if check_post is None:
-        return "Invalid request"
+        if check_post is None:
+            return "Invalid request"
 
-    post_email = check_post[1]
-    text = request.form.get("text")
-    no_of_comments = check_post[7]
-    check_comment = db.execute("SELECT * FROM comments where post_id=:post_id and by_email=:by_email",
-                            {"post_id": post_id, "by_email": email}).fetchone()
-    if check_comment:
-        db.execute("DELETE FROM comments where post_id=:post_id and by_email=:by_email",
-                   {"post_id": post_id, "by_email": email})
-        db.commit()
-        db.execute("INSERT INTO comments VALUES(:post_id ,:by_email, :text)",
-                   {"post_id": post_id, "by_email": email, "text": text})
-        db.commit()
-    else:
-        no_of_comments = no_of_comments + 1
-        db.execute("INSERT INTO comments VALUES(:post_id ,:by_email, :text)",
-                   {"post_id": post_id, "by_email": email, "text": text})
-        db.execute("UPDATE posts SET no_of_comments=:noc WHERE post_id=:post_id", {"noc": no_of_comments, "post_id": post_id})
-        db.commit()
-    return redirect("/")
+        post_email = check_post[1]
+        comment_text = request.form.get("text")
+        no_of_comments = check_post[7]
+        check_comment = db.execute("SELECT * FROM comments where post_id=:post_id and by_email=:by_email",
+                                {"post_id": post_id, "by_email": email}).fetchone()
+        if check_comment:
+            db.execute("UPDATE comments SET text=:text where post_id=:post_id and by_email=:by_email",
+                       {"text": comment_text, "post_id": post_id, "by_email": email})
+            db.commit()
+        else:
+            no_of_comments = no_of_comments + 1
+            db.execute("INSERT INTO comments VALUES(:post_id ,:by_email, :text)",
+                       {"post_id": post_id, "by_email": email, "text": comment_text})
+            db.commit()
+            db.execute("UPDATE posts SET no_of_comments=:noc WHERE post_id=:post_id", {"noc": no_of_comments, "post_id": post_id})
+            db.commit()
+        return redirect("/")
+    return "Invalid Request(Add Comments)"
+
+@application.route("/getcomments/<post_id>")
+def getcomments(post_id):
+    COMM = db.execute("SELECT * FROM comments where post_id= :post_id", {"post_id": post_id}).fetchall()
+    if COMM is None:
+        return "Invalid Request(Comments)"
+    POST_INFO = db.execute("SELECT * FROM posts where post_id= :post_id", {"post_id": post_id}).fetchone()
+    mails = db.execute("SELECT email from profile").fetchall()
+    pics = db.execute("SELECT imgurl from profile").fetchall()
+    names = db.execute("SELECT name from profile").fetchall()
+    for i in range(len(mails)):
+        mails[i] = mails[i][0]
+        pics[i] = pics[i][0]
+        names[i] = names[i][0]
+    D2 = dict(zip(mails, pics))
+    D3 = dict(zip(mails, names))
+    imgs = []
+    nms = []
+    main_img = D2[POST_INFO[1]]
+    main_email = POST_INFO[1]
+    main_name = D3[POST_INFO[1]]
+    details =[]
+    details.append(main_img)
+    details.append(main_email)
+    details.append(main_name)
+    for i in COMM:
+        imgs.append(D2[i[1]])
+        nms.append(D3[i[1]])
+    return render_template("getcomm.html", comm=COMM, post_id=post_id, imgs=imgs, nms=nms, ap=POST_INFO, details=details)
+
+@application.route("/getmedia/<group_id>")
+def getmedia(group_id):
+    CHECK_GRP = db.execute("SELECT * FROM group_chat where group_id=:group_id", {"group_id": group_id}).fetchone()
+    if CHECK_GRP is None:
+        return "Invalid Group"
+    media2 = db.execute("SELECT * FROM MEDIA where group_id=:group_id", {"group_id": group_id}).fetchall()
+    return "hi"

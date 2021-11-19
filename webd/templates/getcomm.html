@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}
+Home page
+{% endblock %}
+
+{% block nav %}
+
+{% endblock %}
+
+{% block content %}
+<body>
+<!-- Page Container -->
+    <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+        <div class="w3-row m3">
+    <!-- Left Column -->
+
+    <!-- End Left Column -->
+    </div>
+        <div class="w3-col m7"><div class="w3-container w3-card w3-white w3-round w3-margin" id="post"><br>
+            <a href="/@/{{ap[1]}}"><img src="{{details[0]}}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px"></a>
+            <span class="w3-right w3-opacity">{{ap[3]}}</span>
+            <h4><a href="/@/{{ap[1]}}"></a></h4><br>
+            <hr class="w3-clear">
+            <p>{{ap[2]}}</p>
+            {% if ap[8] == "img" %}
+                {% if ap[4] and ap[5] %}
+                  <div class="w3-row-padding" style="margin:0 -16px">
+                    <div class="w3-half">
+                      <img src="{{ap[4]}}" style="width:100%; height:300px;" alt="pic1" class="w3-margin-bottom" referrerpolicy="no-referrer">
+                    </div>
+                    <div class="w3-half">
+                      <img src="{{ap[5]}}" style="width:100%; height:300px;" alt="pic2" class="w3-margin-bottom" referrerpolicy="no-referrer">
+                    </div>
+                  </div>
+                {% elif ap[4] %}
+                <img src="{{ap[4]}}" style="width:100%" class="w3-margin-bottom" referrerpolicy="no-referrer">
+
+                {% elif ap[5] %}
+                <img src="{{ap[5]}}" style="width:100%" class="w3-margin-bottom" referrerpolicy="no-referrer">
+                {% endif %}
+            {% endif %}
+            {% if ap[8] == "vid" %}
+            <iframe src="{{ap[4]}}" style="width:100%; height:500px" ></iframe>
+            {% endif %}
+            {% if ap[8] == "pdf" %}
+            <iframe src="{{ap[4]}}" style="width:100%; height:500px" ></iframe>
+            {% endif %}
+
+        <form action="/comments/{{post_id}}" method="POST">
+        <div class="col col-11" id="btn1" style="margin-top: 20px; margin-bottom: 20px">
+            <input type="text" class="form-control-lg" id="text" name="text" placeholder="Type a comment here">
+            <input type="submit" class="btn-border" value="Comment" style="margin-right:0">
+        </div>
+
+        {% for i in range(comm|length) %}
+        <p> <a href = "/@/{{comm[i][1]}}"><img src="{{imgs[i]}}" class="w3-left w3-circle w3-margin-right" style="width:30px"> {{nms[i]}}</a> : {{comm[i][2]}}</p>
+        {% endfor %}
+        </form>
+        </div>
+            </div>
+    </div>
+</body>
+</html>
+{% endblock %}
