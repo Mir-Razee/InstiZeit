@@ -57,4 +57,11 @@ Github Link: https://github.com/Mir-Razee/InstiZeit<br/>
 <p align="center"> Friend Requests </p>
 <p align="center">
   <img src="media/friend_req.png" width="50%" title="1">
-</p><br/>
+</p><br/><br/>
+
+Developed by:<br/>
+Bhore Parth Shirish<br/>
+Nishchay Shroff<br/>
+Nischit Hosamani<br/>
+Mir Razee Mohideen<br/>
+
