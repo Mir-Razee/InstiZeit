@@ -30,6 +30,31 @@ And change DATABASE_PASSWORD accordingly<br/><br/>
 Hosted website: http://instimeet-env.eba-f3my7frm.ap-south-
 1.elasticbeanstalk.com/<br/>
 Github Link: https://github.com/Mir-Razee/InstiZeit<br/>
-[Note: Hosted website is slow and may crash due to server
-overload]<br/>
 
+<p align="center">
+  Landing Page
+  <img src="media/landing1.png" width="100%" title="1">
+</p>
+<p align="center">
+  <img src="media/landing2.png" width="100%" title="1">
+</p><br/>
+<p align="center">
+  Posts
+  <img src="media/posts.png" width="100%" title="1">
+</p><br/>
+<p align="center">
+  Live Messaging
+  <img src="media/messaging.png" width="100%" title="1">
+</p></br>
+<p align="center">
+  Add Friends
+  <img src="media/add_fr.png" width="100%" title="1">
+</p><br/>
+<p align="center">
+  Profile page
+  <img src="media/profile.png" width="100%" title="1">
+</p>
+<p align="center"> Friend Requests </p>
+<p align="center">
+  <img src="media/friend_req.png" width="50%" title="1">
+</p><br/>
