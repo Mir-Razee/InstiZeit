@@ -1,5 +1,5 @@
 # Instizeit
-About our project: InstiZeit is a Social Networking Website for
+About our project: InstiZeit is a Social Networking Site for
 IITI Community<br/><br/>
 Key Features: Real Time Messaging, Connect with Friends using
 Auto-Recommendation, Add Posts with Image, Video and PDF
@@ -25,7 +25,7 @@ API keys needed for running program.<br/>
 database.<br/>
 • You can also connect to local database. To do this, create a
 new local database and add tables using tables.sql file.
-And change DATABASE_PASSWORD accordingly<br/><br/>
+And change DATABASE_PASSWORD accordingly.<br/><br/>
 
 Hosted website: http://instimeet-env.eba-f3my7frm.ap-south-
 1.elasticbeanstalk.com/<br/>
